@@ -1,0 +1,250 @@
+[
+  {
+    "phaseNumber": 1,
+    "title": "PLACEHOLDER — Web Foundations",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "HTML & CSS fundamentals, layout, responsive design",
+        "resources": [
+          { "name": "MDN: HTML/CSS basics", "platform": "Docs" },
+          { "name": "Flexbox Froggy", "platform": "Practice" }
+        ],
+        "project": "Static personal portfolio page",
+        "dsaFocus": "Arrays — two-pointer basics"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "CSS Grid, accessibility, semantic markup",
+        "resources": [
+          { "name": "CSS Grid Garden", "platform": "Practice" },
+          { "name": "Web.dev accessibility", "platform": "Docs" }
+        ],
+        "project": "Responsive landing page",
+        "dsaFocus": "Hash maps — frequency counting"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 2,
+    "title": "PLACEHOLDER — JavaScript Deep Dive",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "Closures, scope, this, prototypes, async JS",
+        "resources": [
+          { "name": "JavaScript.info", "platform": "Course" },
+          { "name": "You Don't Know JS", "platform": "Book" }
+        ],
+        "project": "To-do app with localStorage",
+        "dsaFocus": "Linked lists — reversal"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "DOM, events, fetch, error handling",
+        "resources": [
+          { "name": "MDN: Fetch API", "platform": "Docs" },
+          { "name": "Event delegation patterns", "platform": "Blog" }
+        ],
+        "project": "Weather dashboard consuming a public API",
+        "dsaFocus": "Stacks & queues — browser history"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 3,
+    "title": "PLACEHOLDER — Frontend Frameworks (React)",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "Components, props, state, hooks basics",
+        "resources": [
+          { "name": "React docs: thinking in React", "platform": "Docs" },
+          { "name": "useState/useEffect deep dive", "platform": "Course" }
+        ],
+        "project": "Interactive dashboard UI",
+        "dsaFocus": "Binary trees — traversal"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "Context, routing, forms, API integration",
+        "resources": [
+          { "name": "React Router docs", "platform": "Docs" },
+          { "name": "React Query patterns", "platform": "Blog" }
+        ],
+        "project": "Multi-page app with auth-simulated state",
+        "dsaFocus": "Recursion — backtracking intro"
+      },
+      {
+        "weekNumber": 3,
+        "topic": "Performance, memoization, testing components",
+        "resources": [
+          { "name": "React Testing Library", "platform": "Docs" },
+          { "name": "Web vitals guide", "platform": "Docs" }
+        ],
+        "project": "Refactor dashboard with tests",
+        "dsaFocus": "Binary search — variants"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 4,
+    "title": "PLACEHOLDER — Backend & APIs (Node/Express)",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "Node runtime, npm, HTTP, Express routing",
+        "resources": [
+          { "name": "Express official guide", "platform": "Docs" },
+          { "name": "Node HTTP crash course", "platform": "Course" }
+        ],
+        "project": "REST API for a notes app",
+        "dsaFocus": "Sorting — merge sort"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "Middleware, validation, error handling, REST design",
+        "resources": [
+          { "name": "REST API conventions", "platform": "Docs" },
+          { "name": "Express middleware guide", "platform": "Docs" }
+        ],
+        "project": "Notes API with validation + errors",
+        "dsaFocus": "Heaps — top-k problems"
+      },
+      {
+        "weekNumber": 3,
+        "topic": "Auth (JWT), passwords, environment config",
+        "resources": [
+          { "name": "JWT intro", "platform": "Docs" },
+          { "name": "bcrypt password hashing", "platform": "Docs" }
+        ],
+        "project": "Auth-secured notes API",
+        "dsaFocus": "Graphs — BFS/DFS basics"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 5,
+    "title": "PLACEHOLDER — Databases",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "Relational design, SQL queries, joins",
+        "resources": [
+          { "name": "PostgreSQL tutorial", "platform": "Course" },
+          { "name": "SQLBolt exercises", "platform": "Practice" }
+        ],
+        "project": "Schema + queries for an e-commerce model",
+        "dsaFocus": "Dynamic programming — 1D basics"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "NoSQL, MongoDB, Mongoose ODM, indexing",
+        "resources": [
+          { "name": "MongoDB university", "platform": "Course" },
+          { "name": "Mongoose docs", "platform": "Docs" }
+        ],
+        "project": "Migrate notes API to MongoDB",
+        "dsaFocus": "Sliding window technique"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 6,
+    "title": "PLACEHOLDER — Advanced Backend & Deploy",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "Caching, rate limiting, logging, monitoring",
+        "resources": [
+          { "name": "Node best practices", "platform": "Docs" },
+          { "name": "Logging patterns", "platform": "Blog" }
+        ],
+        "project": "Harden notes API with limits + logs",
+        "dsaFocus": "Graph algorithms — shortest path"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "Deployment: VPS/Render/Railway, envs, CI basics",
+        "resources": [
+          { "name": "Render deployment docs", "platform": "Docs" },
+          { "name": "GitHub Actions intro", "platform": "Docs" }
+        ],
+        "project": "Deploy API to production",
+        "dsaFocus": "Interval & scheduling problems"
+      },
+      {
+        "weekNumber": 3,
+        "topic": "Security: HTTPS, CORS, secrets, dependency audit",
+        "resources": [
+          { "name": "OWASP top 10", "platform": "Docs" },
+          { "name": "npm audit guide", "platform": "Docs" }
+        ],
+        "project": "Security review + fixes on deployed API",
+        "dsaFocus": "Tries — autocomplete"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 7,
+    "title": "PLACEHOLDER — Full-Stack Capstone",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "Project planning, architecture, schema design",
+        "resources": [
+          { "name": "System design primer", "platform": "Docs" },
+          { "name": "Agile fundamentals", "platform": "Course" }
+        ],
+        "project": "Capstone: plan + wireframes",
+        "dsaFocus": "Two heaps — median maintenance"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "Backend + frontend build-out",
+        "resources": [
+          { "name": "Your prior notes", "platform": "Reference" },
+          { "name": "React/Express docs", "platform": "Docs" }
+        ],
+        "project": "Capstone: core features working",
+        "dsaFocus": "Union-find — connectivity"
+      },
+      {
+        "weekNumber": 3,
+        "topic": "Testing, polish, deployment, documentation",
+        "resources": [
+          { "name": "End-to-end testing tools", "platform": "Docs" },
+          { "name": "Release checklists", "platform": "Blog" }
+        ],
+        "project": "Capstone: shipped + documented",
+        "dsaFocus": "Mock interviews — mixed topics"
+      }
+    ]
+  },
+  {
+    "phaseNumber": 8,
+    "title": "PLACEHOLDER — Interview Prep & Polish",
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "DSA patterns review, mock interviews",
+        "resources": [
+          { "name": "Pattern cheat-sheets", "platform": "Reference" },
+          { "name": "Mock interview platforms", "platform": "Practice" }
+        ],
+        "project": "2 mock coding interviews/week",
+        "dsaFocus": "Pattern review: trees, graphs, DP"
+      },
+      {
+        "weekNumber": 2,
+        "topic": "System design review, behavioral stories, portfolio",
+        "resources": [
+          { "name": "System design interview prep", "platform": "Course" },
+          { "name": "STAR method guide", "platform": "Blog" }
+        ],
+        "project": "Final portfolio + resume polish",
+        "dsaFocus": "Full-length timed assessments"
+      }
+    ]
+  }
+]
