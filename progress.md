@@ -10,7 +10,7 @@ Update this file at the end of every session. Check off subtasks as completed. A
 - [x] Express app scaffold, folder structure per AGENTS.md
 - [ ] MongoDB Atlas connection working
 - [x] `User` model + register/login routes (JWT + bcrypt)
-- [ ] `Roadmap` model + seed script (loads the 8-phase study plan as reference data)
+- [x] `Roadmap` model + seed script (loads the 8-phase study plan as reference data)
 - [x] `DailyLog`, `StreakState`, `Badge` models
 - [x] `streakCalculator.js` service — core logic isolated, unit tested
 - [x] Midnight cron job for streak reset on missed days
@@ -19,7 +19,7 @@ Update this file at the end of every session. Check off subtasks as completed. A
   - `streakCalculator.js` fully implemented per skills/streak-logic.md (gap detection, same-day duplicate, 3-of-4 threshold) + 21 passing unit tests.
   - Midnight cron (`node-cron`, `0 0 * * *`) implemented; `runStreakResetCheck()` exported separately for testability.
   - **Atlas connection NOT verified live** — `backend/.env` still has an empty `MONGO_URI` and empty `JWT_SECRET`. Note: an empty `JWT_SECRET` makes register/login 500 (`secretOrPrivateKey must have a value`). Fill both in before running the server.
-  - **Roadmap seed still blocked** — waiting on the 8-phase roadmap JSON from the user (lands in `src/seed/roadmap.json`). Seed script + `Roadmap` model are ready.
+  - Roadmap seeded (2026-08-09) with the **real 8-phase plan from `roadmap.md`** — 60 weeks total (P1: 4 wks, P2–P8: 8 wks each). Phase-level resources/project/DSA from the source are attached to every week of the phase; Phase 8 omits `project`/`dsaFocus` (none in the source). `npm run seed` → 8 updated (upsert by phaseNumber).
 
 ## Phase 2 — API Completion
 - [x] `GET /roadmap`, `GET /roadmap/today`
@@ -100,7 +100,7 @@ Update this file at the end of every session. Check off subtasks as completed. A
   - Current-week highlight: the screen also fetches `GET /roadmap/today` (server computes today's `phaseNumber` + `week` from `user.startDate`) and renders a subtle accent-tinted card with a "Current week" label on the matching week. Position logic stays server-side — the client never computes the week index from `startDate`.
   - Offline: full roadmap + today cached (`cache_roadmap`, `cache_roadmap_today`) and loaded cache-first; if today's position is unavailable (offline with stale cache), the roadmap still browses, just without the highlight.
   - Verified: `tsc --noEmit` clean, `expo lint` clean, `expo export` (android) bundles.
-  - **Not yet done:** the roadmap still needs its seed data to be viewable live (blocked on the 8-phase roadmap JSON — backend returns 404 "roadmap has not been seeded" until then); live verification pending Atlas creds (Phase 9).
+  - **Not yet done:** live verification pending Atlas creds (Phase 9). Roadmap seed data is now live (real plan seeded 2026-08-09).
 
 ## Phase 8 — Offline Support
 - [ ] Full offline check-in flow tested (airplane mode) — deferred to Phase 9 device loop
@@ -136,3 +136,4 @@ Update this file at the end of every session. Check off subtasks as completed. A
   - **API URL wiring**: `mobile/src/services/config.ts` fallback default is now the Render URL (`EXPO_PUBLIC_API_URL` still overrides for dev via `.env.local`), so the APK talks to the deployed backend without EAS env plumbing.
   - **APK boots on the target device** (confirmed by human). Pending final confirmation: login/account against the deployed backend, Today-screen sync, and the notification permission prompt (the APK can show it — unlike Expo Go). The Expo Go "account not found" error when scanning the build-page QR is expected — Expo Go deep-links the expo.dev URL as a project; install the standalone APK via the artifact URL instead.
   - **Post-deploy fix (unmarking blocks):** `POST /logs/:date` previously OR-merged `sessionsCompleted` (a `false` could never clear a stored `true`), so a mistakenly-checked block couldn't be unmarked — the sync mirrored the server's unchanged array back and the UI snapped back to checked. Fixed: the client-sent array is now authoritative (safe for single-device use since the client always sends latest-state per date), and the streak is recomputed from all daily logs on each write so un-completing a day rolls the streak back. Backend tests: 57 passing (added `computeStreakFromLogs` unit tests + unmark/rollback integration tests). No mobile code change and no new APK needed — redeploy only.
+  - **Session 2026-08-09 (roadmap live):** `backend/src/seed/roadmap.json` replaced the PLACEHOLDER data with the real plan from `roadmap.md`. `npm run seed` → 8 updated; verified in Atlas (P1 4 weeks, P2–P8 8 weeks, real topics). Live on both local (:5000) and Render — no code change/redeploy needed since roadmap is DB reference data. The installed APK may still show the cached placeholder roadmap until the Today/Roadmap screens refresh (`cache_roadmap`, `cache_roadmap_today`) — they fetch fresh on mount when online, or after a sign-out/sign-in.
