@@ -11,6 +11,7 @@ import { Link, Redirect } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Screen } from '@/components/screen';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
@@ -57,7 +58,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <Screen insetBottom style={styles.container}>
       <KeyboardAvoidingView
         style={styles.inner}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -138,7 +139,7 @@ export default function LoginScreen() {
           </ThemedText>
         </Link>
       </KeyboardAvoidingView>
-    </ThemedView>
+    </Screen>
   );
 }
 

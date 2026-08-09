@@ -3,8 +3,8 @@ import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 
 import { FadeInView } from '@/components/fade-in-view';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { WeekCard } from '@/components/week-card';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
@@ -72,7 +72,7 @@ export default function RoadmapScreen() {
   const currentWeekKey = today ? `${today.phaseNumber}-${today.week}` : null;
 
   return (
-    <ThemedView style={styles.container}>
+    <Screen style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText type="subtitle">Roadmap</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
@@ -111,7 +111,7 @@ export default function RoadmapScreen() {
           ))
         )}
       </ScrollView>
-    </ThemedView>
+    </Screen>
   );
 }
 

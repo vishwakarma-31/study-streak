@@ -6,8 +6,8 @@ import { BadgeCard } from '@/components/badge-card';
 import { FadeInView } from '@/components/fade-in-view';
 import { HEATMAP_WEEKS, Heatmap } from '@/components/heatmap';
 import { RankCard } from '@/components/rank-card';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { BADGE_CATALOG } from '@/constants/badges';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
@@ -90,7 +90,7 @@ export default function ProgressScreen() {
   const earnedDateByMilestone = new Map(badges.map((b) => [b.milestone, b.achievedDate]));
 
   return (
-    <ThemedView style={styles.container}>
+    <Screen style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText type="subtitle">Progress</ThemedText>
 
@@ -183,7 +183,7 @@ export default function ProgressScreen() {
           </>
         )}
       </ScrollView>
-    </ThemedView>
+    </Screen>
   );
 }
 

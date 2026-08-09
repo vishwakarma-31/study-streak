@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { ensureScheduleExists } from '@/services/notifications';
@@ -21,6 +23,7 @@ function ReminderSync() {
 function RootNavigator() {
   return (
     <>
+      <StatusBar style="auto" />
       <ReminderSync />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" />
@@ -35,10 +38,12 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <RootNavigator />
-      </ThemeProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <RootNavigator />
+        </ThemeProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

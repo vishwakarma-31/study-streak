@@ -3,8 +3,8 @@ import { ActivityIndicator, Pressable, StyleSheet, Switch, View } from 'react-na
 import { Redirect, useRouter } from 'expo-router';
 
 import { FadeInView } from '@/components/fade-in-view';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
@@ -72,8 +72,10 @@ export default function SettingsScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="subtitle">Settings</ThemedText>
+    <Screen style={styles.container}>
+      <ThemedText type="subtitle" style={styles.title}>
+        Settings
+      </ThemedText>
 
       <View style={styles.section}>
         <ThemedText type="default">Study reminders</ThemedText>
@@ -126,15 +128,19 @@ export default function SettingsScreen() {
           <ThemedText style={[styles.buttonLabel, { color: theme.destructive }]}>Sign out</ThemedText>
         </Pressable>
       </FadeInView>
-    </ThemedView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: Spacing.four,
+    paddingHorizontal: Spacing.four,
+    paddingBottom: Spacing.four,
     gap: Spacing.three,
+  },
+  title: {
+    marginTop: Spacing.three,
   },
   section: {
     gap: Spacing.two,

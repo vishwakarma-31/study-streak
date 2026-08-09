@@ -4,8 +4,8 @@ import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'r
 import { Redirect } from 'expo-router';
 
 import { FadeInView } from '@/components/fade-in-view';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
@@ -136,7 +136,7 @@ export default function HistoryScreen() {
     ) : null;
 
   return (
-    <ThemedView style={styles.container}>
+    <Screen style={styles.container}>
       <View style={styles.header}>
         <ThemedText type="subtitle">History</ThemedText>
         <ThemedText type="label" themeColor="textSecondary">
@@ -160,7 +160,7 @@ export default function HistoryScreen() {
         ListEmptyComponent={emptyState}
         ListFooterComponent={footer}
       />
-    </ThemedView>
+    </Screen>
   );
 }
 

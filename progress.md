@@ -196,3 +196,15 @@ Notes:
   - **Mobile:** `TodayData` gained `task: string | null` + `needsContent: boolean`. Today screen subtitle shows `task ?? topic` (weekend/week-without-content falls back to the week topic), and a neutral "detailed plan being written" note replaces the phase line when `needsContent` is true — no dark-pattern copy.
   - **Tests:** backend suite now 102/102 — 12 new deterministic unit tests (`tests/todayPlan.test.js`: per-weekday task lookup, empty-array + missing-key needsContent, weekend null, week advance + roadmap-end clamp + future-start clamp) + 3 integration tests (day-task contract on weekdays, weekend null, needsContent for empty-content week). Mobile `tsc --noEmit` + `expo lint` clean.
   - **Next:** author `days` for the remaining 59 weeks, one phase at a time (curriculum is human-reviewed, not agent-invented per decisions.md).
+
+## Phase 15 — Safe-Area Fix (UI cut off at the top)
+- [x] `SafeAreaProvider` + `StatusBar` added at the root layout
+- [x] New `components/screen.tsx` — themed safe-area container (top inset always; optional bottom inset for full-screen routes)
+- [x] All 7 screens migrated from bare `ThemedView` to `Screen` (Today, Progress, Roadmap, History, Settings, Login, Onboarding)
+- Notes:
+  - **Root cause:** every screen rendered edge-to-edge with `headerShown: false` and zero safe-area handling, so content slid up under the status bar/notch — the exact "safe-area compliance" violation the ui-ux-pro-max skill calls out. Reproduced from human report: "UI cut off at the top / looks too far up" on the installed APK.
+  - **Fix:** `_layout.tsx` wraps the app in `SafeAreaProvider` (react-native-safe-area-context) and renders `<StatusBar style="auto" />`. New `components/screen.tsx` is the single screen primitive: it renders a themed background view, applies `paddingTop: insets.top` (always) and `paddingBottom: insets.bottom` when `insetBottom` is set (used by Login + Onboarding, which have no tab bar). The inset padding is applied after the caller's `style` so it can never be overridden. Tab screens keep their ScrollView/FlatList structure; the bottom tab bar continues to handle the gesture-bar inset.
+  - **Consistency pass:** Settings' container `padding` shorthand was split into `paddingHorizontal`/`paddingBottom` (top now owned by `Screen`) + a `marginTop: Spacing.three` on its title, keeping the 4/8dp top rhythm aligned with the other screens.
+  - **Skills used:** loaded ui-ux-pro-max (safe-area/system-bar rules), ui-styling, design-system (token layering — Screen uses the theme `background` token), brand, design, banner-design, slides (the latter two are banner/presentation workflows — not applicable to an RN screen fix, but loaded per request).
+  - Verified: `tsc --noEmit` clean, `expo lint` clean, `npm test` 17/17, `expo export --platform android` bundles.
+  - **Not yet done:** visual confirmation on the device — needs a new EAS build (APK still predates this fix).

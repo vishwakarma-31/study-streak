@@ -6,8 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { BlockCard } from '@/components/block-card';
 import { FadeInView } from '@/components/fade-in-view';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { extractApiError, fetchStreak, fetchToday, isNotFound, type StreakData, type TodayData } from '@/services/api';
@@ -152,7 +152,7 @@ export default function TodayScreen() {
   const resources = today?.resources ?? [];
 
   return (
-    <ThemedView style={styles.container}>
+    <Screen style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <FadeInView
           style={[
@@ -233,7 +233,7 @@ export default function TodayScreen() {
           </>
         ) : null}
       </ScrollView>
-    </ThemedView>
+    </Screen>
   );
 }
 

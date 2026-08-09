@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
@@ -40,7 +40,7 @@ export default function OnboardingScreen() {
   const denied = remindersState === 'denied';
 
   return (
-    <ThemedView style={styles.container}>
+    <Screen insetBottom style={styles.container}>
       <ThemedText type="subtitle" style={styles.title}>
         Your study plan
       </ThemedText>
@@ -90,7 +90,7 @@ export default function OnboardingScreen() {
           Skip for now
         </ThemedText>
       </Pressable>
-    </ThemedView>
+    </Screen>
   );
 }
 
