@@ -15,6 +15,13 @@ function previousDate(dateStr) {
   return date.toISOString().slice(0, 10);
 }
 
+function nextDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
 function applyLog(streakState, { date, sessionsCompleted }) {
   const sessionsCompletedCount = countCompleted(sessionsCompleted);
   const dayCompleted = isDayCompleted(sessionsCompleted);
@@ -69,4 +76,42 @@ function midnightReset({ currentStreak, yesterdayCompleted }) {
   return currentStreak;
 }
 
-module.exports = { countCompleted, isDayCompleted, previousDate, applyLog, midnightReset };
+// Recomputes the authoritative streak state from the full ordered set of daily
+// logs ({ date, dayCompleted } ascending). Idempotent and handles un-completing a
+// previously-counted day (something the incremental applyLog cannot do), so a
+// mistaken check-in that is later unmarked rolls the streak back correctly.
+function computeStreakFromLogs(logs = []) {
+  const completed = logs
+    .filter((log) => log && log.dayCompleted)
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  let currentStreak = 0;
+  let longestStreak = 0;
+  let totalDaysCompleted = 0;
+  let lastCompletedDate = null;
+  let prevCompletedDate = null;
+
+  for (const log of completed) {
+    totalDaysCompleted += 1;
+    if (prevCompletedDate && log.date === nextDate(prevCompletedDate)) {
+      currentStreak += 1;
+    } else {
+      currentStreak = 1;
+    }
+    prevCompletedDate = log.date;
+    lastCompletedDate = log.date;
+    longestStreak = Math.max(longestStreak, currentStreak);
+  }
+
+  return { currentStreak, longestStreak, lastCompletedDate, totalDaysCompleted };
+}
+
+module.exports = {
+  countCompleted,
+  isDayCompleted,
+  previousDate,
+  nextDate,
+  applyLog,
+  computeStreakFromLogs,
+  midnightReset,
+};

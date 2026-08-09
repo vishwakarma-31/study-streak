@@ -2,7 +2,9 @@ const {
   countCompleted,
   isDayCompleted,
   previousDate,
+  nextDate,
   applyLog,
+  computeStreakFromLogs,
   midnightReset,
 } = require('../src/services/streakCalculator');
 
@@ -49,6 +51,119 @@ describe('previousDate', () => {
 
   test('year boundary', () => {
     expect(previousDate('2026-01-01')).toBe('2025-12-31');
+  });
+});
+
+describe('nextDate', () => {
+  test('plain day arithmetic', () => {
+    expect(nextDate('2026-08-09')).toBe('2026-08-10');
+  });
+
+  test('month boundary', () => {
+    expect(nextDate('2026-02-28')).toBe('2026-03-01');
+  });
+
+  test('leap year', () => {
+    expect(nextDate('2024-02-28')).toBe('2024-02-29');
+  });
+
+  test('year boundary', () => {
+    expect(nextDate('2025-12-31')).toBe('2026-01-01');
+  });
+});
+
+describe('computeStreakFromLogs', () => {
+  test('no logs yields an empty streak state', () => {
+    expect(computeStreakFromLogs([])).toEqual({
+      currentStreak: 0,
+      longestStreak: 0,
+      lastCompletedDate: null,
+      totalDaysCompleted: 0,
+    });
+  });
+
+  test('single completed day starts a streak of 1', () => {
+    const state = computeStreakFromLogs([{ date: '2026-08-09', dayCompleted: true }]);
+    expect(state.currentStreak).toBe(1);
+    expect(state.longestStreak).toBe(1);
+    expect(state.lastCompletedDate).toBe('2026-08-09');
+    expect(state.totalDaysCompleted).toBe(1);
+  });
+
+  test('consecutive completed days increment the streak', () => {
+    const state = computeStreakFromLogs([
+      { date: '2026-08-09', dayCompleted: true },
+      { date: '2026-08-10', dayCompleted: true },
+      { date: '2026-08-11', dayCompleted: true },
+    ]);
+    expect(state.currentStreak).toBe(3);
+    expect(state.longestStreak).toBe(3);
+    expect(state.totalDaysCompleted).toBe(3);
+    expect(state.lastCompletedDate).toBe('2026-08-11');
+  });
+
+  test('gap day restarts the current streak at 1 but keeps longestStreak', () => {
+    const state = computeStreakFromLogs([
+      { date: '2026-08-09', dayCompleted: true },
+      { date: '2026-08-10', dayCompleted: true },
+      { date: '2026-08-12', dayCompleted: true },
+    ]);
+    expect(state.currentStreak).toBe(1);
+    expect(state.longestStreak).toBe(2);
+    expect(state.totalDaysCompleted).toBe(3);
+    expect(state.lastCompletedDate).toBe('2026-08-12');
+  });
+
+  test('non-completed days are skipped and break continuity', () => {
+    const state = computeStreakFromLogs([
+      { date: '2026-08-09', dayCompleted: true },
+      { date: '2026-08-10', dayCompleted: false },
+      { date: '2026-08-11', dayCompleted: true },
+    ]);
+    expect(state.currentStreak).toBe(1);
+    expect(state.longestStreak).toBe(1);
+    expect(state.totalDaysCompleted).toBe(2);
+    expect(state.lastCompletedDate).toBe('2026-08-11');
+  });
+
+  test('uncompleting the last day decrements the streak', () => {
+    const state = computeStreakFromLogs([
+      { date: '2026-08-09', dayCompleted: true },
+      { date: '2026-08-10', dayCompleted: true },
+      { date: '2026-08-11', dayCompleted: false },
+    ]);
+    expect(state.currentStreak).toBe(2);
+    expect(state.longestStreak).toBe(2);
+    expect(state.totalDaysCompleted).toBe(2);
+    expect(state.lastCompletedDate).toBe('2026-08-10');
+  });
+
+  test('uncompleting a middle day of the streak splits it', () => {
+    const state = computeStreakFromLogs([
+      { date: '2026-08-09', dayCompleted: true },
+      { date: '2026-08-10', dayCompleted: false },
+      { date: '2026-08-11', dayCompleted: true },
+      { date: '2026-08-12', dayCompleted: true },
+    ]);
+    expect(state.currentStreak).toBe(2);
+    expect(state.longestStreak).toBe(2);
+    expect(state.totalDaysCompleted).toBe(3);
+    expect(state.lastCompletedDate).toBe('2026-08-12');
+  });
+
+  test('unsorted and interleaved input is normalized', () => {
+    const state = computeStreakFromLogs([
+      { date: '2026-08-10', dayCompleted: true },
+      { date: '2026-08-09', dayCompleted: true },
+    ]);
+    expect(state.currentStreak).toBe(2);
+    expect(state.lastCompletedDate).toBe('2026-08-10');
+  });
+
+  test('does not mutate the input logs', () => {
+    const logs = [{ date: '2026-08-10', dayCompleted: true }];
+    computeStreakFromLogs(logs);
+    expect(logs).toEqual([{ date: '2026-08-10', dayCompleted: true }]);
   });
 });
 

@@ -1,6 +1,6 @@
 const DailyLog = require('../models/DailyLog');
 const StreakState = require('../models/StreakState');
-const { countCompleted, isDayCompleted, applyLog } = require('../services/streakCalculator');
+const { countCompleted, isDayCompleted, computeStreakFromLogs } = require('../services/streakCalculator');
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -21,14 +21,6 @@ function validateDateParam(req, res) {
     return false;
   }
   return true;
-}
-
-async function findStreakState(userId) {
-  let streak = await StreakState.findOne({ userId });
-  if (!streak) {
-    streak = await StreakState.create({ userId });
-  }
-  return streak;
 }
 
 async function getLog(req, res, next) {
@@ -57,18 +49,18 @@ async function upsertLog(req, res, next) {
     const userId = req.userId;
     const date = req.params.date;
 
-    const existing = await DailyLog.findOne({ userId, date });
-    const base = existing ? existing.sessionsCompleted : [false, false, false, false];
-    const merged = base.map((v, i) => v || incoming[i]);
-
-    const sessionsCompletedCount = countCompleted(merged);
-    const dayCompleted = isDayCompleted(merged);
+    // The client's latest state is authoritative: it sends the full 4-block array
+    // on every sync (single-device, latest-state-wins serialization), so a false
+    // must be able to clear a stored true (unmarking a mistaken check-in).
+    const sessionsCompleted = incoming;
+    const sessionsCompletedCount = countCompleted(sessionsCompleted);
+    const dayCompleted = isDayCompleted(sessionsCompleted);
 
     const log = await DailyLog.findOneAndUpdate(
       { userId, date },
       {
         $set: {
-          sessionsCompleted: merged,
+          sessionsCompleted,
           sessionsCompletedCount,
           dayCompleted,
           syncedAt: new Date(),
@@ -77,13 +69,11 @@ async function upsertLog(req, res, next) {
       { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 
-    const streak = await findStreakState(userId);
-    const result = applyLog(streak, { date, sessionsCompleted: merged });
-    if (result.streakChanged) {
-      await StreakState.updateOne({ _id: streak._id }, { $set: result.streakState });
-    }
+    const logs = await DailyLog.find({ userId }).select('date dayCompleted').sort({ date: 1 }).lean();
+    const streakState = computeStreakFromLogs(logs);
+    await StreakState.updateOne({ userId }, { $set: streakState }, { upsert: true });
 
-    return res.json({ log, streak: result.streakState });
+    return res.json({ log, streak: streakState });
   } catch (err) {
     return next(err);
   }

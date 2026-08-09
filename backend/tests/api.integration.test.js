@@ -207,7 +207,7 @@ describe('POST /logs/:date', () => {
     expect(res.body.streak.longestStreak).toBe(1);
   });
 
-  test('merges upserts so true is never overwritten back to false', async () => {
+  test('client-sent state is authoritative (unmarking a block works)', async () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, false, false, true],
     });
@@ -215,10 +215,50 @@ describe('POST /logs/:date', () => {
       sessionsCompleted: [false, true, false, false],
     });
     expect(res.status).toBe(200);
-    expect(res.body.log.sessionsCompleted).toEqual([true, true, false, true]);
-    expect(res.body.log.sessionsCompletedCount).toBe(3);
-    expect(res.body.log.dayCompleted).toBe(true);
-    expect(res.body.streak.currentStreak).toBe(1);
+    expect(res.body.log.sessionsCompleted).toEqual([false, true, false, false]);
+    expect(res.body.log.sessionsCompletedCount).toBe(1);
+    expect(res.body.log.dayCompleted).toBe(false);
+    expect(res.body.streak.currentStreak).toBe(0);
+    expect(res.body.streak.totalDaysCompleted).toBe(0);
+  });
+
+  test('uncompleting a counted day rolls the streak back to 0', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, false, false],
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.log.dayCompleted).toBe(false);
+    expect(res.body.streak.currentStreak).toBe(0);
+    expect(res.body.streak.totalDaysCompleted).toBe(0);
+
+    const streakRes = await authed(request(app).get('/streak'));
+    expect(streakRes.body.currentStreak).toBe(0);
+    expect(streakRes.body.history).toEqual([{ date: '2026-08-09', dayCompleted: false }]);
+  });
+
+  test('uncompleting the latest consecutive day decrements the streak', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post('/logs/2026-08-10')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    expect((await authed(request(app).get('/streak'))).body.currentStreak).toBe(2);
+
+    await authed(request(app).post('/logs/2026-08-10')).send({
+      sessionsCompleted: [true, true, false, false],
+    });
+    const res = await authed(request(app).get('/streak'));
+    expect(res.body.currentStreak).toBe(1);
+    expect(res.body.totalDaysCompleted).toBe(1);
+    expect(res.body.lastCompletedDate).toBe('2026-08-09');
+    expect(res.body.history).toEqual([
+      { date: '2026-08-09', dayCompleted: true },
+      { date: '2026-08-10', dayCompleted: false },
+    ]);
   });
 
   test('does not double-increment streak on same-day re-sync', async () => {

@@ -2,7 +2,7 @@
 
 Update this file at the end of every session. Check off subtasks as completed. Add a short note under a phase if something is blocked, half-done, or deviated from plan.
 
-**Current active phase:** 9
+**Current active phase:** 10
 
 ---
 
@@ -135,3 +135,4 @@ Update this file at the end of every session. Check off subtasks as completed. A
   - **APK built** (`preview` profile): build `604a5156-d609-4ff5-a300-d2de611eabf6`, 107 MB, verified valid ZIP/APK. Local copy: `%TEMP%\opencode\study-streak.apk`. Download: `https://expo.dev/accounts/mickey_31/projects/mobile/builds/604a5156-d609-4ff5-a300-d2de611eabf6` (direct artifact: `https://expo.dev/artifacts/eas/FooKtEeA87USk_Off8AxYVHrjQpEBYUoS09m5CWV--I.apk`).
   - **API URL wiring**: `mobile/src/services/config.ts` fallback default is now the Render URL (`EXPO_PUBLIC_API_URL` still overrides for dev via `.env.local`), so the APK talks to the deployed backend without EAS env plumbing.
   - **APK boots on the target device** (confirmed by human). Pending final confirmation: login/account against the deployed backend, Today-screen sync, and the notification permission prompt (the APK can show it — unlike Expo Go). The Expo Go "account not found" error when scanning the build-page QR is expected — Expo Go deep-links the expo.dev URL as a project; install the standalone APK via the artifact URL instead.
+  - **Post-deploy fix (unmarking blocks):** `POST /logs/:date` previously OR-merged `sessionsCompleted` (a `false` could never clear a stored `true`), so a mistakenly-checked block couldn't be unmarked — the sync mirrored the server's unchanged array back and the UI snapped back to checked. Fixed: the client-sent array is now authoritative (safe for single-device use since the client always sends latest-state per date), and the streak is recomputed from all daily logs on each write so un-completing a day rolls the streak back. Backend tests: 57 passing (added `computeStreakFromLogs` unit tests + unmark/rollback integration tests). No mobile code change and no new APK needed — redeploy only.
