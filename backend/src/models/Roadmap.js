@@ -12,6 +12,15 @@ const roadmapSchema = new mongoose.Schema(
         resources: [{ _id: false, name: String, platform: String }],
         project: String,
         dsaFocus: String,
+        days: [
+          {
+            _id: false,
+            dayOfWeek: String,
+            task: String,
+            resourceRef: String,
+          },
+        ],
+        needsContent: Boolean,
       },
     ],
   },

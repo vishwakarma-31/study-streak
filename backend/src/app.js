@@ -7,6 +7,7 @@ const roadmapRoutes = require('./routes/roadmap');
 const logsRoutes = require('./routes/logs');
 const streakRoutes = require('./routes/streak');
 const badgesRoutes = require('./routes/badges');
+const rankRoutes = require('./routes/rank');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/roadmap', roadmapRoutes);
 app.use('/logs', logsRoutes);
 app.use('/streak', streakRoutes);
 app.use('/badges', badgesRoutes);
+app.use('/rank', rankRoutes);
 
 app.use(errorHandler);
 

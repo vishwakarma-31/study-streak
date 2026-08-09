@@ -5,9 +5,6 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import type { RoadmapWeek } from '@/services/api';
 
-const ACCENT = '#3c87f7';
-const ACCENT_TINT = 'rgba(60, 135, 247, 0.12)';
-
 type WeekCardProps = {
   week: RoadmapWeek;
   current: boolean;
@@ -21,16 +18,18 @@ export function WeekCard({ week, current }: WeekCardProps) {
       style={[
         styles.card,
         {
-          backgroundColor: current ? ACCENT_TINT : theme.backgroundElement,
-          borderColor: current ? ACCENT : theme.backgroundElement,
+          backgroundColor: current ? theme.tintSoft : theme.backgroundElement,
+          borderColor: current ? theme.tint : theme.border,
         },
       ]}>
       <View style={styles.headerRow}>
-        <ThemedText type="smallBold" style={current ? styles.currentWeekNumber : undefined}>
+        <ThemedText
+          type="smallBold"
+          style={current ? { color: theme.tint } : undefined}>
           Week {week.weekNumber}
         </ThemedText>
         {current ? (
-          <ThemedText type="small" style={styles.currentLabel}>
+          <ThemedText type="small" style={[styles.currentLabel, { color: theme.tint }]}>
             Current week
           </ThemedText>
         ) : null}
@@ -74,11 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  currentWeekNumber: {
-    color: ACCENT,
-  },
   currentLabel: {
-    color: ACCENT,
     fontSize: 12,
     lineHeight: 16,
   },

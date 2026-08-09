@@ -44,6 +44,8 @@ export type TodayData = {
   phase: string;
   week: number;
   topic: string;
+  task: string | null;
+  needsContent: boolean;
   blocks: Block[];
   resources: RoadmapResource[];
   dayType: string;
@@ -67,6 +69,25 @@ export type SubmitLogResponse = {
   streak: StreakData;
 };
 
+export type DsaProblem = {
+  title: string;
+  difficulty: string;
+  link?: string;
+};
+
+export type DailyLogEntry = {
+  date: string;
+  sessionsCompletedCount: number;
+  dayCompleted: boolean;
+  note: string;
+  dsaProblems: DsaProblem[];
+};
+
+export async function fetchHistory(from?: string, to?: string): Promise<DailyLogEntry[]> {
+  const { data } = await api.get<DailyLogEntry[]>('/logs/history', { params: { from, to } });
+  return data;
+}
+
 export type BadgeMilestone =
   | '7_day'
   | '30_day'
@@ -87,6 +108,19 @@ export type Badge = {
 
 export async function fetchBadges(): Promise<Badge[]> {
   const { data } = await api.get<Badge[]>('/badges');
+  return data;
+}
+
+export type RankData = {
+  totalRP: number;
+  currentTier: string;
+  currentSubTier: string | null;
+  rpIntoCurrentSubTier: number;
+  rpNeededForNextSubTier: number | null;
+};
+
+export async function fetchRank(): Promise<RankData> {
+  const { data } = await api.get<RankData>('/rank');
   return data;
 }
 

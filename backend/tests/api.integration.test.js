@@ -11,6 +11,7 @@ const Roadmap = require('../src/models/Roadmap');
 const DailyLog = require('../src/models/DailyLog');
 const StreakState = require('../src/models/StreakState');
 const Badge = require('../src/models/Badge');
+const RankState = require('../src/models/RankState');
 
 let mongoServer;
 
@@ -30,6 +31,13 @@ const seedPhases = [
         resources: [{ name: 'MDN', platform: 'web' }],
         project: 'Project A',
         dsaFocus: 'arrays',
+        days: [
+          { dayOfWeek: 'Mon', task: 'Task Mon' },
+          { dayOfWeek: 'Tue', task: 'Task Tue' },
+          { dayOfWeek: 'Wed', task: 'Task Wed' },
+          { dayOfWeek: 'Thu', task: 'Task Thu' },
+          { dayOfWeek: 'Fri', task: 'Task Fri' },
+        ],
       },
       {
         weekNumber: 2,
@@ -37,6 +45,7 @@ const seedPhases = [
         resources: [],
         project: 'Project B',
         dsaFocus: 'strings',
+        days: [],
       },
     ],
   },
@@ -95,6 +104,7 @@ beforeEach(async () => {
     DailyLog.deleteMany({}),
     StreakState.deleteMany({}),
     Badge.deleteMany({}),
+    RankState.deleteMany({}),
   ]);
   await registerAndLogin();
   await Roadmap.create(seedPhases);
@@ -170,6 +180,30 @@ describe('GET /roadmap/today', () => {
     expect(res.body.phaseNumber).toBe(2);
     expect(res.body.topic).toBe('HTTP');
   });
+
+  test('returns the resolved day task on weekdays and null on weekends', async () => {
+    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(3) } });
+    const res = await authed(request(app).get('/roadmap/today'));
+    expect(res.status).toBe(200);
+    const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date().getDay()];
+    if (res.body.dayType === 'weekday') {
+      expect(res.body.task).toBe(`Task ${dayName}`);
+      expect(res.body.needsContent).toBe(false);
+    } else {
+      expect(res.body.task).toBeNull();
+      expect(res.body.needsContent).toBe(false);
+    }
+  });
+
+  test('flags needsContent for weekday weeks without day content', async () => {
+    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(10) } });
+    const res = await authed(request(app).get('/roadmap/today'));
+    expect(res.status).toBe(200);
+    if (res.body.dayType === 'weekday') {
+      expect(res.body.task).toBeNull();
+      expect(res.body.needsContent).toBe(true);
+    }
+  });
 });
 
 describe('GET /logs/:date', () => {
@@ -192,6 +226,98 @@ describe('GET /logs/:date', () => {
   test('rejects a malformed date', async () => {
     const res = await authed(request(app).get('/logs/not-a-date'));
     expect(res.status).toBe(400);
+  });
+});
+
+describe('GET /logs/history', () => {
+  function localDateString(nDaysAgo) {
+    const d = daysAgo(nDaysAgo);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  test('returns logs newest-first within the default window', async () => {
+    await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
+      sessionsCompleted: [true, true, false, false],
+    });
+    await authed(request(app).post(`/logs/${localDateString(70)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get('/logs/history'));
+    expect(res.status).toBe(200);
+    expect(res.body.map((l) => l.date)).toEqual([localDateString(0), localDateString(1)]);
+  });
+
+  test('returns only contract fields on each entry', async () => {
+    await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get('/logs/history'));
+    expect(res.status).toBe(200);
+    expect(Object.keys(res.body[0]).sort()).toEqual([
+      'date',
+      'dayCompleted',
+      'dsaProblems',
+      'note',
+      'sessionsCompletedCount',
+    ]);
+    expect(res.body[0]).toEqual({
+      date: localDateString(0),
+      dayCompleted: true,
+      dsaProblems: [],
+      note: '',
+      sessionsCompletedCount: 3,
+    });
+  });
+
+  test('respects from and to filters', async () => {
+    await authed(request(app).post(`/logs/${localDateString(5)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post(`/logs/${localDateString(3)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get(
+      `/logs/history?from=${localDateString(4)}&to=${localDateString(2)}`
+    ));
+    expect(res.status).toBe(200);
+    expect(res.body.map((l) => l.date)).toEqual([localDateString(3)]);
+  });
+
+  test('returns an empty array when no logs exist in range', async () => {
+    const res = await authed(request(app).get('/logs/history'));
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  test('rejects an invalid from', async () => {
+    const res = await authed(request(app).get('/logs/history?from=not-a-date'));
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeTruthy();
+  });
+
+  test('rejects an invalid to', async () => {
+    const res = await authed(request(app).get('/logs/history?to=2026-99-99'));
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeTruthy();
+  });
+
+  test('rejects from after to', async () => {
+    const res = await authed(request(app).get(
+      `/logs/history?from=${localDateString(0)}&to=${localDateString(5)}`
+    ));
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeTruthy();
+  });
+
+  test('requires auth', async () => {
+    const res = await request(app).get('/logs/history');
+    expect(res.status).toBe(401);
   });
 });
 
@@ -283,6 +409,55 @@ describe('POST /logs/:date', () => {
     expect(res.body.streak.currentStreak).toBe(2);
   });
 
+  test('awards +20 RP the first time a day is completed', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get('/rank'));
+    expect(res.body.totalRP).toBe(20);
+    expect(res.body.currentTier).toBe('Iron');
+    expect(res.body.currentSubTier).toBe('I');
+    expect(res.body.rpIntoCurrentSubTier).toBe(20);
+    expect(res.body.rpNeededForNextSubTier).toBe(80);
+  });
+
+  test('does not double-award RP on same-day re-sync', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, true],
+    });
+    const res = await authed(request(app).get('/rank'));
+    expect(res.body.totalRP).toBe(20);
+  });
+
+  test('unmarking a day does not drop RP (rank never decreases)', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, false, false],
+    });
+    const res = await authed(request(app).get('/rank'));
+    expect(res.body.totalRP).toBe(20);
+    expect(res.body.streak).toBeUndefined();
+  });
+
+  test('15 completed days crosses into Bronze I', async () => {
+    for (let d = 1; d <= 15; d += 1) {
+      const date = `2026-08-${String(d).padStart(2, '0')}`;
+      await authed(request(app).post(`/logs/${date}`)).send({
+        sessionsCompleted: [true, true, true, false],
+      });
+    }
+    const res = await authed(request(app).get('/rank'));
+    expect(res.body.totalRP).toBe(300);
+    expect(res.body.currentTier).toBe('Bronze');
+    expect(res.body.currentSubTier).toBe('I');
+    expect(res.body.rpIntoCurrentSubTier).toBe(0);
+  });
+
   test('rejects invalid sessionsCompleted payloads', async () => {
     const res = await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true],
@@ -342,5 +517,33 @@ describe('GET /badges', () => {
     const res = await authed(request(app).get('/badges'));
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
+  });
+});
+
+describe('GET /rank', () => {
+  test('returns the Iron I zero state when no rank exists yet', async () => {
+    const res = await authed(request(app).get('/rank'));
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      totalRP: 0,
+      currentTier: 'Iron',
+      currentSubTier: 'I',
+      rpIntoCurrentSubTier: 0,
+      rpNeededForNextSubTier: 100,
+    });
+  });
+
+  test('requires auth', async () => {
+    const res = await request(app).get('/rank');
+    expect(res.status).toBe(401);
+  });
+
+  test('reports Radiant with no sub-tier at 2400 RP', async () => {
+    await RankState.create({ userId, totalRP: 2450, currentTier: 'Radiant', currentSubTier: null, rpIntoCurrentSubTier: 50 });
+    const res = await authed(request(app).get('/rank'));
+    expect(res.body.currentTier).toBe('Radiant');
+    expect(res.body.currentSubTier).toBeNull();
+    expect(res.body.rpIntoCurrentSubTier).toBe(50);
+    expect(res.body.rpNeededForNextSubTier).toBeNull();
   });
 });

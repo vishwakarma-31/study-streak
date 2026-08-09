@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Switch, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 
+import { FadeInView } from '@/components/fade-in-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { useTheme } from '@/hooks/use-theme';
 import {
   cancelReminders,
   getReminderPermission,
@@ -17,6 +19,7 @@ import {
 
 export default function SettingsScreen() {
   const { status, signOut } = useAuth();
+  const theme = useTheme();
   const router = useRouter();
   const [remindersOn, setRemindersOn] = useState(false);
   const [remindersLoading, setRemindersLoading] = useState(true);
@@ -88,7 +91,8 @@ export default function SettingsScreen() {
               value={remindersOn}
               disabled={busy}
               onValueChange={handleToggleReminders}
-              trackColor={{ false: '#d0d4da', true: '#3c87f7' }}
+              trackColor={{ false: theme.border, true: theme.tint }}
+              thumbColor={remindersOn ? '#ffffff' : undefined}
               accessibilityLabel="Study reminders enabled"
             />
           )}
@@ -110,12 +114,18 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={handleSignOut}
-        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}>
-        <ThemedText style={styles.buttonLabel}>Sign out</ThemedText>
-      </Pressable>
+      <FadeInView>
+        <Pressable
+          accessibilityRole="button"
+          onPress={handleSignOut}
+          style={({ pressed }) => [
+            styles.button,
+            { borderColor: theme.destructive },
+            pressed && styles.buttonPressed,
+          ]}>
+          <ThemedText style={[styles.buttonLabel, { color: theme.destructive }]}>Sign out</ThemedText>
+        </Pressable>
+      </FadeInView>
     </ThemedView>
   );
 }
@@ -140,17 +150,16 @@ const styles = StyleSheet.create({
     marginTop: Spacing.one,
   },
   button: {
-    backgroundColor: '#3c87f7',
+    borderWidth: 1,
     borderRadius: Spacing.two,
     alignItems: 'center',
     paddingVertical: Spacing.three,
     marginTop: Spacing.four,
   },
   buttonPressed: {
-    opacity: 0.85,
+    opacity: 0.7,
   },
   buttonLabel: {
-    color: '#ffffff',
     fontWeight: '600',
   },
 });

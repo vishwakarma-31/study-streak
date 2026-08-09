@@ -3,7 +3,9 @@ import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 
 import { BadgeCard } from '@/components/badge-card';
+import { FadeInView } from '@/components/fade-in-view';
 import { HEATMAP_WEEKS, Heatmap } from '@/components/heatmap';
+import { RankCard } from '@/components/rank-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BADGE_CATALOG } from '@/constants/badges';
@@ -13,12 +15,14 @@ import { useTheme } from '@/hooks/use-theme';
 import {
   extractApiError,
   fetchBadges,
+  fetchRank,
   fetchStreak,
   isNotFound,
   type Badge,
+  type RankData,
   type StreakData,
 } from '@/services/api';
-import { BADGES_CACHE_KEY, STREAK_CACHE_KEY } from '@/services/cache-keys';
+import { BADGES_CACHE_KEY, RANK_CACHE_KEY, STREAK_CACHE_KEY } from '@/services/cache-keys';
 import { getJson, setJson } from '@/services/storage';
 
 export default function ProgressScreen() {
@@ -26,6 +30,7 @@ export default function ProgressScreen() {
   const theme = useTheme();
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [badges, setBadges] = useState<Badge[]>([]);
+  const [rank, setRank] = useState<RankData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +39,10 @@ export default function ProgressScreen() {
 
     const cachedStreak = await getJson<StreakData>(STREAK_CACHE_KEY);
     const cachedBadges = await getJson<Badge[]>(BADGES_CACHE_KEY);
+    const cachedRank = await getJson<RankData>(RANK_CACHE_KEY);
     if (cachedStreak) setStreak(cachedStreak);
     if (cachedBadges) setBadges(cachedBadges);
+    if (cachedRank) setRank(cachedRank);
     setLoading(false);
 
     try {
@@ -59,6 +66,17 @@ export default function ProgressScreen() {
         setError(extractApiError(err));
       }
     }
+
+    try {
+      const r = await fetchRank();
+      setRank(r);
+      await setJson(RANK_CACHE_KEY, r);
+      setError(null);
+    } catch (err) {
+      if (!cachedRank) {
+        setError(extractApiError(err));
+      }
+    }
   }, [status]);
 
   useEffect(() => {
@@ -76,56 +94,77 @@ export default function ProgressScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText type="subtitle">Progress</ThemedText>
 
-        {loading && streak === null && badges.length === 0 ? (
+        {loading && streak === null && badges.length === 0 && rank === null ? (
           <ActivityIndicator size="large" style={styles.spacer} />
-        ) : error && streak === null && badges.length === 0 ? (
+        ) : error && streak === null && badges.length === 0 && rank === null ? (
           <ThemedText type="small" themeColor="textSecondary" style={styles.spacer}>
             {error}
           </ThemedText>
         ) : (
           <>
-            <View style={styles.section}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
+            {rank ? (
+              <FadeInView style={styles.section}>
+                <ThemedText type="label" themeColor="textSecondary">
+                  Rank
+                </ThemedText>
+                <RankCard rank={rank} />
+              </FadeInView>
+            ) : null}
+
+            <FadeInView delay={80} style={styles.section}>
+              <ThemedText type="label" themeColor="textSecondary">
                 Last {HEATMAP_WEEKS} weeks
               </ThemedText>
               <View
                 style={[
                   styles.heatmapCard,
-                  { backgroundColor: theme.backgroundElement },
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.border },
                 ]}>
                 <Heatmap history={streak?.history ?? []} />
               </View>
-            </View>
+            </FadeInView>
 
-            <View style={styles.statsRow}>
-              <View style={styles.statBox}>
-                <ThemedText style={styles.statNumber}>
+            <FadeInView delay={160} style={styles.statsRow}>
+              <View
+                style={[
+                  styles.statBox,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.border },
+                ]}>
+                <ThemedText type="display" style={styles.statNumber}>
                   {streak ? streak.currentStreak : 0}
                 </ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
                   Current streak
                 </ThemedText>
               </View>
-              <View style={styles.statBox}>
-                <ThemedText style={styles.statNumber}>
+              <View
+                style={[
+                  styles.statBox,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.border },
+                ]}>
+                <ThemedText type="display" style={styles.statNumber}>
                   {streak ? streak.longestStreak : 0}
                 </ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
                   Longest streak
                 </ThemedText>
               </View>
-              <View style={styles.statBox}>
-                <ThemedText style={styles.statNumber}>
+              <View
+                style={[
+                  styles.statBox,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.border },
+                ]}>
+                <ThemedText type="display" style={styles.statNumber}>
                   {streak ? streak.totalDaysCompleted : 0}
                 </ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
                   Days completed
                 </ThemedText>
               </View>
-            </View>
+            </FadeInView>
 
-            <View style={styles.section}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
+            <FadeInView delay={240} style={styles.section}>
+              <ThemedText type="label" themeColor="textSecondary">
                 Badges
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
@@ -140,7 +179,7 @@ export default function ProgressScreen() {
                   />
                 ))}
               </View>
-            </View>
+            </FadeInView>
           </>
         )}
       </ScrollView>
@@ -163,6 +202,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   heatmapCard: {
+    borderWidth: 1,
     borderRadius: Spacing.three,
     padding: Spacing.three,
     alignSelf: 'flex-start',
@@ -175,13 +215,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     gap: Spacing.half,
+    borderWidth: 1,
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
   },
   statNumber: {
     fontSize: 32,
     lineHeight: 40,
-    fontWeight: '600',
   },
   badgesGrid: {
     flexDirection: 'row',

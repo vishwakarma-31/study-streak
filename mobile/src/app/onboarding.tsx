@@ -6,12 +6,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { useTheme } from '@/hooks/use-theme';
 import { requestReminderPermission, scheduleReminders } from '@/services/notifications';
 
 type RemindersState = 'idle' | 'requesting' | 'denied';
 
 export default function OnboardingScreen() {
   const { status } = useAuth();
+  const theme = useTheme();
   const router = useRouter();
   const [remindersState, setRemindersState] = useState<RemindersState>('idle');
 
@@ -66,7 +68,11 @@ export default function OnboardingScreen() {
         accessibilityRole="button"
         disabled={primaryBusy}
         onPress={handleEnableReminders}
-        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}>
+        style={({ pressed }) => [
+          styles.button,
+          { backgroundColor: theme.tint },
+          pressed && styles.buttonPressed,
+        ]}>
         {primaryBusy ? (
           <ActivityIndicator color="#ffffff" />
         ) : (
@@ -99,7 +105,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#3c87f7',
     borderRadius: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',

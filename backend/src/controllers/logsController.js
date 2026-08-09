@@ -1,8 +1,26 @@
 const DailyLog = require('../models/DailyLog');
 const StreakState = require('../models/StreakState');
+const RankState = require('../models/RankState');
 const { countCompleted, isDayCompleted, computeStreakFromLogs } = require('../services/streakCalculator');
+const { applyDayCompletion } = require('../services/rankCalculator');
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const DEFAULT_WINDOW_DAYS = 60;
+
+function formatDate(date) {
+  const year = date.getUTCFullYear();
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getUTCDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function localToday() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = `${d.getMonth() + 1}`.padStart(2, '0');
+  const day = `${d.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 function isValidDate(dateStr) {
   if (!DATE_RE.test(dateStr)) return false;
@@ -33,6 +51,36 @@ async function getLog(req, res, next) {
   }
 }
 
+async function getHistory(req, res, next) {
+  try {
+    const { from, to } = req.query;
+    if (from !== undefined && !isValidDate(from)) {
+      return res.status(400).json({ error: 'from must be a valid YYYY-MM-DD string' });
+    }
+    if (to !== undefined && !isValidDate(to)) {
+      return res.status(400).json({ error: 'to must be a valid YYYY-MM-DD string' });
+    }
+
+    const end = to || localToday();
+    const endDate = new Date(`${end}T00:00:00Z`);
+    endDate.setUTCDate(endDate.getUTCDate() - (DEFAULT_WINDOW_DAYS - 1));
+    const start = from || formatDate(endDate);
+
+    if (start > end) {
+      return res.status(400).json({ error: 'from must not be after to' });
+    }
+
+    const logs = await DailyLog.find({ userId: req.userId, date: { $gte: start, $lte: end } })
+      .select('date sessionsCompletedCount dayCompleted note dsaProblems -_id')
+      .sort({ date: -1 })
+      .lean();
+
+    return res.json(logs);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function upsertLog(req, res, next) {
   try {
     if (!validateDateParam(req, res)) return undefined;
@@ -48,6 +96,9 @@ async function upsertLog(req, res, next) {
 
     const userId = req.userId;
     const date = req.params.date;
+
+    const existingLog = await DailyLog.findOne({ userId, date }).lean();
+    const wasCompleted = Boolean(existingLog && existingLog.dayCompleted);
 
     // The client's latest state is authoritative: it sends the full 4-block array
     // on every sync (single-device, latest-state-wins serialization), so a false
@@ -72,6 +123,14 @@ async function upsertLog(req, res, next) {
     const logs = await DailyLog.find({ userId }).select('date dayCompleted').sort({ date: 1 }).lean();
     const streakState = computeStreakFromLogs(logs);
     await StreakState.updateOne({ userId }, { $set: streakState }, { upsert: true });
+
+    // Rank is cumulative and never decreases: award RP only when a day newly
+    // becomes completed (false → true). Re-syncs and unmarking a day change nothing.
+    if (dayCompleted && !wasCompleted) {
+      const rank = await RankState.findOne({ userId }).lean();
+      const { rankState } = applyDayCompletion(rank || {}, { dayCompleted: true });
+      await RankState.updateOne({ userId }, { $set: rankState }, { upsert: true });
+    }
 
     return res.json({ log, streak: streakState });
   } catch (err) {
@@ -100,4 +159,4 @@ async function updateNote(req, res, next) {
   }
 }
 
-module.exports = { getLog, upsertLog, updateNote };
+module.exports = { getLog, getHistory, upsertLog, updateNote };

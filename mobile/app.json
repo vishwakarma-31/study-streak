@@ -30,13 +30,13 @@
       [
         "expo-notifications",
         {
-          "color": "#3c87f7"
+          "color": "#D97706"
         }
       ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#FFFBEB",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }

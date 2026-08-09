@@ -4,7 +4,17 @@ import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?:
+    | 'display'
+    | 'title'
+    | 'subtitle'
+    | 'default'
+    | 'small'
+    | 'smallBold'
+    | 'label'
+    | 'link'
+    | 'linkPrimary'
+    | 'code';
   themeColor?: ThemeColor;
 };
 
@@ -15,11 +25,13 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
     <Text
       style={[
         { color: theme[themeColor ?? 'text'] },
-        type === 'default' && styles.default,
+        type === 'display' && styles.display,
         type === 'title' && styles.title,
+        type === 'subtitle' && styles.subtitle,
+        type === 'default' && styles.default,
         type === 'small' && styles.small,
         type === 'smallBold' && styles.smallBold,
-        type === 'subtitle' && styles.subtitle,
+        type === 'label' && styles.label,
         type === 'link' && styles.link,
         type === 'linkPrimary' && styles.linkPrimary,
         type === 'code' && styles.code,
@@ -31,6 +43,29 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
 }
 
 const styles = StyleSheet.create({
+  display: {
+    fontSize: 64,
+    lineHeight: 68,
+    fontWeight: '800',
+    letterSpacing: -1,
+  },
+  title: {
+    fontSize: 48,
+    fontWeight: '700',
+    lineHeight: 52,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 32,
+    lineHeight: 40,
+    fontWeight: '700',
+    letterSpacing: -0.25,
+  },
+  default: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: '500',
+  },
   small: {
     fontSize: 14,
     lineHeight: 20,
@@ -41,20 +76,12 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '700',
   },
-  default: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '500',
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: '600',
-    lineHeight: 52,
-  },
-  subtitle: {
-    fontSize: 32,
-    lineHeight: 44,
-    fontWeight: '600',
+  label: {
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   link: {
     lineHeight: 30,
@@ -63,7 +90,6 @@ const styles = StyleSheet.create({
   linkPrimary: {
     lineHeight: 30,
     fontSize: 14,
-    color: '#3c87f7',
   },
   code: {
     fontFamily: Fonts.mono,

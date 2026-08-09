@@ -1,13 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/hooks/use-theme';
 import type { StreakHistoryEntry } from '@/services/api';
 import { toDateString } from '@/services/date';
-
-const ACCENT = '#3c87f7';
-const PARTIAL_ACCENT = 'rgba(60, 135, 247, 0.35)';
 
 const CELL_SIZE = 14;
 const CELL_GAP = 3;
@@ -82,20 +78,19 @@ function buildGrid(history: StreakHistoryEntry[]) {
 }
 
 export function Heatmap({ history }: HeatmapProps) {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'dark' ? 'dark' : 'light'];
+  const theme = useTheme();
   const { months, days } = buildGrid(history);
 
   function cellColor(state: DayState): string {
     switch (state) {
       case 'completed':
-        return ACCENT;
+        return theme.success;
       case 'partial':
-        return PARTIAL_ACCENT;
+        return theme.successSoft;
       case 'future':
-        return colors.backgroundElement;
+        return theme.backgroundElement;
       case 'none':
-        return colors.backgroundSelected;
+        return theme.backgroundSelected;
     }
   }
 
@@ -130,7 +125,7 @@ export function Heatmap({ history }: HeatmapProps) {
                   styles.cell,
                   {
                     backgroundColor: cellColor(day.state),
-                    borderColor: day.today ? ACCENT : 'transparent',
+                    borderColor: day.today ? theme.tint : 'transparent',
                   },
                 ]}
               />

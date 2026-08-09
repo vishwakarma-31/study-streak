@@ -12,7 +12,30 @@
           { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
         ],
         "project": "Styled personal portfolio page (static)",
-        "dsaFocus": "DSA starts Week 2"
+        "dsaFocus": "DSA starts Week 2",
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "HTML document structure & basic tags (html, head, body, headings, paragraphs)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Semantic tags (header, nav, main, section, article, footer)"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Lists, links, images, and tables"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Forms — input types, labels, basic validation attributes"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice day — rebuild a simple page from scratch using everything this week, no reference"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
@@ -23,7 +46,9 @@
           { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
         ],
         "project": "Styled personal portfolio page (static)",
-        "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit"
+        "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -34,7 +59,9 @@
           { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
         ],
         "project": "Styled personal portfolio page (static)",
-        "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit"
+        "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -45,7 +72,9 @@
           { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
         ],
         "project": "Styled personal portfolio page (static)",
-        "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit"
+        "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -61,7 +90,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -71,7 +102,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -81,7 +114,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -91,7 +126,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -101,7 +138,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -111,7 +150,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -121,7 +162,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -131,7 +174,9 @@
           { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
-        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot"
+        "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -147,7 +192,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -157,7 +204,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -167,7 +216,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -177,7 +228,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -187,7 +240,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -197,7 +252,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -207,7 +264,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -217,7 +276,9 @@
           { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
-        "dsaFocus": "Recursion, basic sorting/searching"
+        "dsaFocus": "Recursion, basic sorting/searching",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -233,7 +294,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -243,7 +306,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -253,7 +318,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -263,7 +330,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -273,7 +342,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -283,7 +354,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -293,7 +366,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -303,7 +378,9 @@
           { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
-        "dsaFocus": "Linked lists, stacks, queues"
+        "dsaFocus": "Linked lists, stacks, queues",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -319,7 +396,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -329,7 +408,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -339,7 +420,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -349,7 +432,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -359,7 +444,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -369,7 +456,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -379,7 +468,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -389,7 +480,9 @@
           { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
         ],
         "project": "Backend API for a simple app",
-        "dsaFocus": "Trees, basic hashing"
+        "dsaFocus": "Trees, basic hashing",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -405,7 +498,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -415,7 +510,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -425,7 +522,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -435,7 +534,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -445,7 +546,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -455,7 +558,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -465,7 +570,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -475,7 +582,9 @@
           { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
         ],
         "project": "Full backend with database + authentication",
-        "dsaFocus": "Graphs basics, more hashing problems"
+        "dsaFocus": "Graphs basics, more hashing problems",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -491,7 +600,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -501,7 +612,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -511,7 +624,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -521,7 +636,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -531,7 +648,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -541,7 +660,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -551,7 +672,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -561,7 +684,9 @@
           { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
-        "dsaFocus": "Dynamic programming basics, mixed medium-level practice"
+        "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
+        "days": [],
+        "needsContent": true
       }
     ]
   },
@@ -575,7 +700,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 2,
@@ -583,7 +710,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 3,
@@ -591,7 +720,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 4,
@@ -599,7 +730,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 5,
@@ -607,7 +740,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 6,
@@ -615,7 +750,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 7,
@@ -623,7 +760,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       },
       {
         "weekNumber": 8,
@@ -631,7 +770,9 @@
         "resources": [
           { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
           { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
-        ]
+        ],
+        "days": [],
+        "needsContent": true
       }
     ]
   }

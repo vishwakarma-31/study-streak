@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 
+import { FadeInView } from '@/components/fade-in-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WeekCard } from '@/components/week-card';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { useTheme } from '@/hooks/use-theme';
 import {
   extractApiError,
   fetchRoadmap,
@@ -18,11 +20,9 @@ import { ROADMAP_CACHE_KEY, TODAY_CACHE_KEY } from '@/services/cache-keys';
 import { toDateString } from '@/services/date';
 import { getJson, setJson } from '@/services/storage';
 
-const ACCENT = '#3c87f7';
-const ACCENT_TINT = 'rgba(60, 135, 247, 0.12)';
-
 export default function RoadmapScreen() {
   const { status } = useAuth();
+  const theme = useTheme();
   const [phases, setPhases] = useState<RoadmapPhase[]>([]);
   const [today, setToday] = useState<TodayData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,11 +86,13 @@ export default function RoadmapScreen() {
             {error}
           </ThemedText>
         ) : (
-          phases.map((phase) => (
-            <View key={phase.phaseNumber} style={styles.phase}>
+          phases.map((phase, phaseIndex) => (
+            <FadeInView key={phase.phaseNumber} delay={phaseIndex * 60} style={styles.phase}>
               <View style={styles.phaseHeader}>
-                <View style={[styles.phasePill, { backgroundColor: ACCENT_TINT }]}>
-                  <ThemedText style={styles.phasePillText}>Phase {phase.phaseNumber}</ThemedText>
+                <View style={[styles.phasePill, { backgroundColor: theme.tintSoft }]}>
+                  <ThemedText style={[styles.phasePillText, { color: theme.tint }]}>
+                    Phase {phase.phaseNumber}
+                  </ThemedText>
                 </View>
                 <ThemedText type="default" style={styles.phaseTitle}>
                   {phase.title}
@@ -105,7 +107,7 @@ export default function RoadmapScreen() {
                   />
                 ))}
               </View>
-            </View>
+            </FadeInView>
           ))
         )}
       </ScrollView>
@@ -137,10 +139,10 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.half,
   },
   phasePillText: {
-    color: ACCENT,
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '700',
+    letterSpacing: 0.5,
   },
   phaseTitle: {
     fontWeight: '600',

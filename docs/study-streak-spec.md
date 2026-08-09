@@ -136,7 +136,7 @@ A daily cron job (midnight server time) checks: if yesterday's `dailyLog` doesn'
 | POST | `/auth/register` | One-time setup |
 | POST | `/auth/login` | Get JWT |
 | GET | `/roadmap` | Full 8-phase roadmap |
-| GET | `/roadmap/today` | Today's specific topic + 4 blocks, computed from `startDate` |
+| GET | `/roadmap/today` | Today's specific topic + resolved day task + 4 blocks, computed from `startDate`; `task` is `null` (and `needsContent: true`) on weekday weeks whose day content isn't authored yet, `null` on weekends |
 | GET | `/logs/:date` | Fetch a specific day's log |
 | POST | `/logs/:date` | Upsert session check-ins for a date |
 | PATCH | `/logs/:date/note` | Add/update the 1-line note |

@@ -6,8 +6,6 @@ import { Spacing } from '@/constants/theme';
 import type { BadgeInfo } from '@/constants/badges';
 import { useTheme } from '@/hooks/use-theme';
 
-const ACCENT = '#3c87f7';
-
 type BadgeCardProps = {
   info: BadgeInfo;
   earnedDate: string | null;
@@ -22,20 +20,24 @@ function formatEarnedDate(isoDate: string): string {
 export function BadgeCard({ info, earnedDate }: BadgeCardProps) {
   const theme = useTheme();
   const earned = earnedDate !== null;
-  const iconColor = earned ? ACCENT : theme.textSecondary;
+  const iconColor = earned ? theme.success : theme.textSecondary;
   const iconName = (earned ? info.icon : `${info.icon}-outline`) as BadgeInfo['icon'];
 
   return (
-    <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: theme.backgroundElement, borderColor: earned ? theme.successSoft : theme.border },
+      ]}>
       <Ionicons name={iconName} size={28} color={iconColor} />
-      <ThemedText type="smallBold" style={earned ? styles.earnedLabel : undefined}>
+      <ThemedText type="smallBold" style={earned ? { color: theme.success } : undefined}>
         {info.label}
       </ThemedText>
       <ThemedText type="small" themeColor="textSecondary" style={styles.description}>
         {info.description}
       </ThemedText>
       {earnedDate ? (
-        <ThemedText type="small" style={styles.earnedDate}>
+        <ThemedText type="small" style={{ color: theme.success }}>
           Earned {formatEarnedDate(earnedDate)}
         </ThemedText>
       ) : null}
@@ -48,18 +50,11 @@ const styles = StyleSheet.create({
     width: '48%',
     alignItems: 'center',
     gap: Spacing.one,
+    borderWidth: 1,
     borderRadius: Spacing.three,
     padding: Spacing.three,
   },
   description: {
     textAlign: 'center',
-  },
-  earnedLabel: {
-    color: ACCENT,
-  },
-  earnedDate: {
-    color: ACCENT,
-    fontSize: 12,
-    lineHeight: 16,
   },
 });

@@ -1,9 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { getBlockState } from '@/services/date';
 
 type BlockCardProps = {
   index: number;
@@ -13,10 +20,28 @@ type BlockCardProps = {
   onPress: () => void;
 };
 
-const ACCENT = '#3c87f7';
-
 export function BlockCard({ index, label, time, checked, onPress }: BlockCardProps) {
   const theme = useTheme();
+  const reduced = useReducedMotion();
+  const scale = useSharedValue(1);
+
+  const state = getBlockState(checked, time);
+  const completed = state === 'completed';
+  const active = state === 'active';
+  const missed = state === 'missed';
+
+  const backgroundColor = completed
+    ? theme.successSoft
+    : active
+      ? theme.tintSoft
+      : theme.backgroundElement;
+  const borderColor = completed ? theme.success : active ? theme.tint : theme.border;
+  const checkColor = completed ? theme.success : active ? theme.tint : theme.textSecondary;
+  const labelColor = completed || missed ? 'textSecondary' : 'text';
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.get() }],
+  }));
 
   return (
     <Pressable
@@ -24,37 +49,54 @@ export function BlockCard({ index, label, time, checked, onPress }: BlockCardPro
       accessibilityState={{ checked }}
       accessibilityLabel={`${label}, ${time}`}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.card,
-        {
-          backgroundColor: theme[checked ? 'backgroundSelected' : 'backgroundElement'],
-          borderColor: checked ? ACCENT : theme.backgroundElement,
-        },
-        pressed && styles.pressed,
-      ]}>
-      <View
+      onPressIn={() => {
+        if (!reduced) scale.set(withSpring(0.98, { damping: 20, stiffness: 300 }));
+      }}
+      onPressOut={() => {
+        scale.set(withSpring(1, { damping: 20, stiffness: 300 }));
+      }}>
+      <Animated.View
         style={[
-          styles.check,
-          {
-            borderColor: checked ? ACCENT : theme.textSecondary,
-            backgroundColor: checked ? ACCENT : 'transparent',
-          },
+          styles.card,
+          { backgroundColor, borderColor },
+          missed && styles.missed,
+          animatedStyle,
         ]}>
-        {checked ? <Ionicons name="checkmark" size={16} color="#ffffff" /> : null}
-      </View>
+        <View
+          style={[
+            styles.check,
+            {
+              borderColor: checkColor,
+              backgroundColor: completed || active ? checkColor : 'transparent',
+            },
+          ]}>
+          {completed ? (
+            <Ionicons name="checkmark" size={16} color="#ffffff" />
+          ) : active ? (
+            <View style={[styles.nowDot, { backgroundColor: theme.text }]} />
+          ) : null}
+        </View>
 
-      <View style={styles.textColumn}>
-        <ThemedText type="default" style={checked ? styles.checkedLabel : undefined}>
-          {label}
-        </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
-          {time}
-        </ThemedText>
-      </View>
+        <View style={styles.textColumn}>
+          <ThemedText type="default" themeColor={labelColor} style={completed ? styles.checkedLabel : undefined}>
+            {label}
+          </ThemedText>
+          <ThemedText
+            type="small"
+            themeColor={active ? 'tint' : 'textSecondary'}
+            style={active ? styles.activeTime : undefined}>
+            {time}
+            {active ? '  — now' : ''}
+          </ThemedText>
+        </View>
 
-      <ThemedText type="small" themeColor="textSecondary" style={styles.index}>
-        {index + 1}
-      </ThemedText>
+        <ThemedText
+          type="small"
+          themeColor="textSecondary"
+          style={styles.index}>
+          {index + 1}
+        </ThemedText>
+      </Animated.View>
     </Pressable>
   );
 }
@@ -68,8 +110,8 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     padding: Spacing.three,
   },
-  pressed: {
-    opacity: 0.85,
+  missed: {
+    opacity: 0.55,
   },
   check: {
     width: 28,
@@ -79,12 +121,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  nowDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
   textColumn: {
     flex: 1,
     gap: Spacing.half,
   },
   checkedLabel: {
     textDecorationLine: 'line-through',
+  },
+  activeTime: {
+    fontWeight: '700',
   },
   index: {
     alignSelf: 'flex-start',

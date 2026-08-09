@@ -13,10 +13,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { useTheme } from '@/hooks/use-theme';
 import { extractApiError } from '@/services/api';
 
 export default function LoginScreen() {
   const { status, signIn, signUp } = useAuth();
+  const theme = useTheme();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -71,18 +73,18 @@ export default function LoginScreen() {
         <ThemedView type="backgroundElement" style={styles.form}>
           {isSignup && (
             <TextInput
-              style={styles.input}
+              style={[styles.input, { borderColor: theme.border, color: theme.text }]}
               placeholder="Name"
-              placeholderTextColor="#8a8f98"
+              placeholderTextColor={theme.textSecondary}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
             />
           )}
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: theme.border, color: theme.text }]}
             placeholder="Email"
-            placeholderTextColor="#8a8f98"
+            placeholderTextColor={theme.textSecondary}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -90,9 +92,9 @@ export default function LoginScreen() {
             keyboardType="email-address"
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: theme.border, color: theme.text }]}
             placeholder="Password"
-            placeholderTextColor="#8a8f98"
+            placeholderTextColor={theme.textSecondary}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -109,7 +111,11 @@ export default function LoginScreen() {
             accessibilityRole="button"
             disabled={submitting}
             onPress={submit}
-            style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}>
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: theme.tint },
+              pressed && styles.buttonPressed,
+            ]}>
             {submitting ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
@@ -161,14 +167,12 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d0d4da',
     borderRadius: Spacing.two,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#3c87f7',
     borderRadius: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',

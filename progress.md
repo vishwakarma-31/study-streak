@@ -2,7 +2,7 @@
 
 Update this file at the end of every session. Check off subtasks as completed. Add a short note under a phase if something is blocked, half-done, or deviated from plan.
 
-**Current active phase:** 10
+**Current active phase:** 14
 
 ---
 
@@ -137,3 +137,62 @@ Update this file at the end of every session. Check off subtasks as completed. A
   - **APK boots on the target device** (confirmed by human). Pending final confirmation: login/account against the deployed backend, Today-screen sync, and the notification permission prompt (the APK can show it — unlike Expo Go). The Expo Go "account not found" error when scanning the build-page QR is expected — Expo Go deep-links the expo.dev URL as a project; install the standalone APK via the artifact URL instead.
   - **Post-deploy fix (unmarking blocks):** `POST /logs/:date` previously OR-merged `sessionsCompleted` (a `false` could never clear a stored `true`), so a mistakenly-checked block couldn't be unmarked — the sync mirrored the server's unchanged array back and the UI snapped back to checked. Fixed: the client-sent array is now authoritative (safe for single-device use since the client always sends latest-state per date), and the streak is recomputed from all daily logs on each write so un-completing a day rolls the streak back. Backend tests: 57 passing (added `computeStreakFromLogs` unit tests + unmark/rollback integration tests). No mobile code change and no new APK needed — redeploy only.
   - **Session 2026-08-09 (roadmap live):** `backend/src/seed/roadmap.json` replaced the PLACEHOLDER data with the real plan from `roadmap.md`. `npm run seed` → 8 updated; verified in Atlas (P1 4 weeks, P2–P8 8 weeks, real topics). Live on both local (:5000) and Render — no code change/redeploy needed since roadmap is DB reference data. The installed APK may still show the cached placeholder roadmap until the Today/Roadmap screens refresh (`cache_roadmap`, `cache_roadmap_today`) — they fetch fresh on mount when online, or after a sign-out/sign-in.
+
+Phase 11 — Ranking System
+- [x] rankState model + services/rankCalculator.js
+- [x] GET /rank endpoint
+- [x] Tier/sub-tier/progress bar shown on Progress screen
+- [x] Original tier visuals (no copied game branding)
+Notes:
+- Backend: new `models/RankState.js` (userId unique, `totalRP`, `currentTier`, `currentSubTier` null for Radiant, `rpIntoCurrentSubTier`) and `services/rankCalculator.js` — pure/non-mutating, mirrors streakCalculator.js's contract and stays fully separate. Covers all 9 tiers (Iron 0–299 … Radiant 2400+, open-ended, no sub-tiers), sub-tier boundaries every 100 RP, and exposes `applyDayCompletion` (+20) and `applyPhaseBonus` (+50). 22 new unit tests; backend suite now 79 passing (was 57).
+- RP earning wired into `POST /logs/:date`: +20 RP is awarded only when a day newly transitions false→true (`wasCompleted` check before upsert). Same-day re-syncs never double-award, and unmarking a previously-counted day never drops RP — rank is strictly monotonic per skills/ranking-system.md. The `POST` response contract is unchanged (`{ log, streak }`); rank is read via `GET /rank`.
+- `GET /rank` (auth-protected, mounted in app.js) returns `{ totalRP, currentTier, currentSubTier, rpIntoCurrentSubTier, rpNeededForNextSubTier }`. Returns a computed default (Iron I, 0 RP) when no RankState doc exists rather than 404 — see decisions.md.
+- **Phase-project bonus (+50 RP) implemented but NOT wired to any route**: there is no schema/API signal for "phase project just marked complete" (badge earning logic still doesn't exist). `applyPhaseBonus` is unit-tested and ready; flag for the phase that adds completion detection.
+- Mobile: `RankData` + `fetchRank()` in api.ts, `RANK_CACHE_KEY` in cache-keys.ts, `constants/rank.ts` (TIER_ORDER + TIER_META with the tier color progression), new `components/rank-card.tsx` with **original geometric badge artwork** (circle + layered diamond motif + roman numeral; Radiant shows a filled diamond, no numeral) and a progress bar toward the next sub-tier (`"X/100 RP to Silver III"`; "Highest rank" at Radiant). Progress screen renders the Rank card as the first section and caches it (`cache_rank`) cache-first so it renders offline.
+- Verified: backend `npm test` 79/79, mobile `tsc --noEmit` clean, `expo lint` clean, `npm test` 7/7.
+- **Not yet done:** tier-up celebration animation (deferred — scope was display only), live on-device verification against the deployed backend.
+
+Phase 12 — UI/UX Revamp
+- [x] Checked for ui-ux-pro-max-skill in OpenCode, confirmed Android/RN compatibility (or confirmed not applicable)
+- [x] Palette/typography/card-state redesign applied per skills/mobile-ui-patterns.md
+- [x] All 5 screens updated
+Notes:
+- `ui-ux-pro-max` CLI installed globally and its `--design-system` output generated. The palette it produced (streak amber `#D97706` primary, habit green `#059669` accent, warm cream `#FFFBEB` background, Inter/Calistoga type) is genuinely useful, but the generated pattern is web/landing-biased (App Store landing sections, Google-font CDN imports, GSAP scroll reveals) — synthesized for React Native per the v2 direction in skills/mobile-ui-patterns.md instead of copying it. See decisions.md.
+- **New palette** in `constants/theme.ts`: warm cream light mode + warm charcoal dark mode (no more pure black/white/blue). Added tokens `tint` (amber = streak/energy/primary), `success` (emerald = completed/achieved), `destructive`, `border`, plus `tintSoft`/`successSoft` tint backgrounds. Light-mode `tint` darkened to amber-700 (`#B45309`) and `success` to emerald-700 (`#047857`) to hold WCAG AA contrast on the cream background. Every `#3c87f7` reference replaced (heatmap, block-card, badge-card, week-card, roadmap, settings, login, onboarding, notification channel color, app.json splash + notification colors).
+- **Typography**: `ThemedText` gained `display` (64/68, weight 800 — streak hero and stat numbers) and `label` (13px, uppercase, letterspaced — section headers); `title`/`subtitle` weights bumped to 700 with tightened letter-spacing. System fonts kept — the generated Inter/Calistoga pairing would need new font assets, and the v2 direction's "differentiated weights" is satisfied by weight/scale contrast.
+- **BlockCard state awareness**: each card now renders its factual time state via new pure helpers `parseTimeToMinutes`/`getBlockState` in `services/date.ts` — `completed` (green fill + check), `active` now (amber fill + dot + "— now"), `upcoming` (neutral), `missed` (dimmed, 55% opacity). No guilt copy — a passed block is just quiet. 10 new unit tests in `src/services/__tests__/date.test.ts`.
+- **Purposeful motion**: new `components/fade-in-view.tsx` (Reanimated `withTiming` fade + 12px rise, 320ms, staggered `delay`) wraps the streak hero, screen sections, phase groups, and block rows. BlockCard gets a subtle `withSpring` press-scale. Both honor `useReducedMotion()` (skip animation entirely). No GSAP, no gestures — kept to the skill's "subtle" dial (motion 3/10).
+- **Screen-by-screen**: Today — streak moved into an amber-tinted hero card (`display` type + flame icon), topic header now uses `label` + `subtitle`. Progress — Rank card keeps its original geometric artwork but gains a tier-colored soft border; heatmap cells now green (completed) with amber today-outline; stat boxes became bordered cards; section headers use `label`. Roadmap — phase pills amber, phase groups fade in with stagger. History — designed empty state (icon + card) instead of a bare text stub. Settings — amber switch tint, sign-out is now a quiet destructive-bordered button (no more solid blue). Tab bar — active tab amber, bar background matches theme with a subtle top border.
+- **React Compiler compatibility**: Reanimated shared values are read/written via the official `.get()`/`.set()` API (not `.value =`), which the `react-hooks/immutability` lint enforces and Reanimated's docs recommend under the Compiler.
+- Verified: `tsc --noEmit` clean, `expo lint` clean, `npm test` 17/17 (was 7 — added date helpers), `expo export --platform android` bundles (1715 modules).
+- **Not yet done:** visual review on a real device (colors/motion only — needs the next build or Expo Go since these are JS-layer changes; Expo Go can show them), and splash/adaptive-icon binary assets are still the template blue graphics (app.json background colors updated, but the PNGs themselves are a separate asset pass).
+Phase 13 — Live History Screen
+- [x] GET /logs/history endpoint
+- [x] History screen wired to real data, reverse-chronological
+- [x] Empty state handled
+Notes:
+- Backend: new `GET /logs/history` (auth-protected, registered in `routes/logs.js` **before** `GET /logs/:date` so `history` isn't swallowed by the `:date` param). Optional `from`/`to` query params (YYYY-MM-DD, both validated); defaults to the last 60 days ending today (server-local date, matching the mobile client's `toDateString`); rejects `from` after `to` (400). Returns a bare array of `{ date, sessionsCompletedCount, dayCompleted, note, dsaProblems }` (explicit `-_id`), sorted date descending, `.lean()` read-only per skills/api-design-conventions.md.
+- History can't show per-block labels — `DailyLog` doesn't persist the day type or block labels, only the 4-bool array + count, so completion renders as "Completed" vs "X of 4 blocks" (honest count, no invented slots). See decisions.md.
+- Mobile: `DailyLogEntry` / `DsaProblem` types + `fetchHistory()` in `services/api.ts`; History screen rebuilt (`src/app/(tabs)/history.tsx`) — `FlatList` reverse-chronological cards (formatted date, Completed pill or count, up-to-2-line note, DSA title chips), pull-to-refresh (`RefreshControl`, calm error state "Could not load history — pull down to try again" when a fetch fails with no data), the Phase 12 empty state preserved, and a subtle "Last synced <time>" footer. No local caching — the screen reads straight from the API per the phase spec.
+- Verified: backend `npm test` 87/87 (new history suite: default-window exclusion, contract-field shape, from/to filter, empty array, invalid from/to, from>to, auth-required), mobile `tsc --noEmit` clean, `expo lint` clean.
+- **Not yet done:** live verification against the deployed backend (`GET /logs/history` reaches Render on the next deploy) and visual review of the list on-device.
+## Phase 14 — Roadmap Day-Level Content
+- [x] `days` array added to `Roadmap` model weeks sub-schema (`_id: false`, `{ dayOfWeek, task }`)
+- [x] `needsContent: true` flag on every week — with `days: []` when it's a weekday-without-content week
+- [x] `GET /roadmap/today` resolves the day-specific task (pure `resolveWeek`/`dayTaskFor` helpers, exported for tests)
+- [x] Phase 1 Week 1 populated with real HTML/CSS day content (worked example, `needsContent: false`)
+- [x] All other weeks flagged `needsContent: true`, listed here as a checklist (start here next session):
+  - Phase 1: Weeks 2–4
+  - Phase 2: Weeks 1–8
+  - Phase 3: Weeks 1–8
+  - Phase 4: Weeks 1–8
+  - Phase 5: Weeks 1–8
+  - Phase 6: Weeks 1–8
+  - Phase 7: Weeks 1–8
+  - Phase 8: Weeks 1–8
+- Notes:
+  - **Backend:** `Roadmap` week sub-schema gained `days: [{ dayOfWeek, task }]` + `needsContent: Boolean` (default true). Seed `roadmap.json` updated by script (original fields byte-identical): P1W1 gets 5 real Mon–Fri day tasks (HTML document structure → semantic tags → lists/links/images/tables → forms → no-reference practice day); the other 59 weeks get `days: []` + `needsContent: true`. Re-seeding is an upsert-by-phaseNumber (`npm run seed`) so the deployed DB picks it up on the next run.
+  - **`GET /roadmap/today`** now returns `task` (the specific day's task on weekdays, `null` on weekends and on weekday weeks whose days aren't authored yet) and `needsContent` (true only for weekday weeks with no day content). Week-position logic refactored into exported pure helpers `resolveWeek(phases, startDate, today)` + `dayTaskFor(week, dayOfWeek)` — same clamping behavior as before, now unit-testable.
+  - **Mobile:** `TodayData` gained `task: string | null` + `needsContent: boolean`. Today screen subtitle shows `task ?? topic` (weekend/week-without-content falls back to the week topic), and a neutral "detailed plan being written" note replaces the phase line when `needsContent` is true — no dark-pattern copy.
+  - **Tests:** backend suite now 102/102 — 12 new deterministic unit tests (`tests/todayPlan.test.js`: per-weekday task lookup, empty-array + missing-key needsContent, weekend null, week advance + roadmap-end clamp + future-start clamp) + 3 integration tests (day-task contract on weekdays, weekend null, needsContent for empty-content week). Mobile `tsc --noEmit` + `expo lint` clean.
+  - **Next:** author `days` for the remaining 59 weeks, one phase at a time (curriculum is human-reviewed, not agent-invented per decisions.md).

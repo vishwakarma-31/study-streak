@@ -2,8 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, ScrollView, StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { addNetworkStateListener, getNetworkStateAsync } from 'expo-network';
+import { Ionicons } from '@expo/vector-icons';
 
 import { BlockCard } from '@/components/block-card';
+import { FadeInView } from '@/components/fade-in-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -13,11 +15,13 @@ import { TODAY_CACHE_KEY, STREAK_CACHE_KEY } from '@/services/cache-keys';
 import { formatDayLabel, toDateString } from '@/services/date';
 import { flushPendingSync, getLocalLog, getPendingDates, isPending, setLocalLog } from '@/services/logs';
 import { getJson, setJson } from '@/services/storage';
+import { useTheme } from '@/hooks/use-theme';
 
 const EMPTY_CHECKED = [false, false, false, false];
 
 export default function TodayScreen() {
   const { status } = useAuth();
+  const theme = useTheme();
   const [today, setToday] = useState<TodayData | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [checked, setChecked] = useState<boolean[]>(EMPTY_CHECKED);
@@ -150,21 +154,30 @@ export default function TodayScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.streakRow}>
-          <View style={styles.streakBox}>
-            <ThemedText type="title" style={styles.streakNumber}>
-              {streak ? streak.currentStreak : 0}
-            </ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              day streak
-            </ThemedText>
+        <FadeInView
+          style={[
+            styles.streakHeroCard,
+            { backgroundColor: theme.tintSoft, borderColor: theme.border },
+          ]}>
+          <View style={styles.streakHero}>
+            <View style={styles.streakBox}>
+              <ThemedText type="display" style={[styles.streakNumber, { color: theme.tint }]}>
+                {streak ? streak.currentStreak : 0}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                day streak
+              </ThemedText>
+            </View>
+            <View style={styles.streakAside}>
+              <Ionicons name="flame" size={40} color={theme.tint} />
+              {pending ? (
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pendingLabel}>
+                  Pending sync
+                </ThemedText>
+              ) : null}
+            </View>
           </View>
-          {pending ? (
-            <ThemedText type="small" themeColor="textSecondary" style={styles.pendingLabel}>
-              Pending sync
-            </ThemedText>
-          ) : null}
-        </View>
+        </FadeInView>
 
         {loading && today === null ? (
           <ActivityIndicator size="large" style={styles.spacer} />
@@ -174,32 +187,40 @@ export default function TodayScreen() {
           </ThemedText>
         ) : today ? (
           <>
-            <View style={styles.header}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
+            <FadeInView delay={60} style={styles.header}>
+              <ThemedText type="label" themeColor="tint">
                 Phase {today.phaseNumber} · Week {today.week} · {formatDayLabel(new Date())}
               </ThemedText>
-              <ThemedText type="subtitle">{today.topic}</ThemedText>
-              <ThemedText type="default" themeColor="textSecondary">
-                {today.phase}
-              </ThemedText>
-            </View>
+              <ThemedText type="subtitle">{today.task ?? today.topic}</ThemedText>
+              {today.needsContent ? (
+                <ThemedText type="small" themeColor="textSecondary">
+                  The detailed daily plan for this week is being written — the topic and daily blocks
+                  below are already live.
+                </ThemedText>
+              ) : (
+                <ThemedText type="default" themeColor="textSecondary">
+                  {today.phase}
+                </ThemedText>
+              )}
+            </FadeInView>
 
             <View style={styles.blocks}>
               {blocks.map((block, index) => (
-                <BlockCard
-                  key={block.index ?? index}
-                  index={index}
-                  label={block.label ?? 'Focus'}
-                  time={block.time}
-                  checked={checked[index] ?? false}
-                  onPress={() => void handleToggle(index)}
-                />
+                <FadeInView key={block.index ?? index} delay={120 + index * 70}>
+                  <BlockCard
+                    index={index}
+                    label={block.label ?? 'Focus'}
+                    time={block.time}
+                    checked={checked[index] ?? false}
+                    onPress={() => void handleToggle(index)}
+                  />
+                </FadeInView>
               ))}
             </View>
 
             {resources.length > 0 ? (
-              <View style={styles.resources}>
-                <ThemedText type="smallBold" themeColor="textSecondary" style={styles.resourcesHeading}>
+              <FadeInView delay={120 + blocks.length * 70} style={styles.resources}>
+                <ThemedText type="label" themeColor="textSecondary" style={styles.resourcesHeading}>
                   Resources this week
                 </ThemedText>
                 {resources.map((resource, index) => (
@@ -207,7 +228,7 @@ export default function TodayScreen() {
                     {resource.platform ? `${resource.name} — ${resource.platform}` : resource.name}
                   </ThemedText>
                 ))}
-              </View>
+              </FadeInView>
             ) : null}
           </>
         ) : null}
@@ -224,22 +245,31 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
     gap: Spacing.three,
   },
-  streakRow: {
+  streakHeroCard: {
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    padding: Spacing.four,
+    marginTop: Spacing.two,
+  },
+  streakHero: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: Spacing.two,
+    backgroundColor: 'transparent',
   },
   streakBox: {
     alignItems: 'center',
   },
   streakNumber: {
     fontSize: 64,
-    lineHeight: 72,
+    lineHeight: 68,
+  },
+  streakAside: {
+    alignItems: 'center',
+    gap: Spacing.one,
   },
   pendingLabel: {
-    alignSelf: 'flex-end',
-    marginBottom: Spacing.three,
+    alignSelf: 'center',
   },
   spacer: {
     marginTop: Spacing.six,
