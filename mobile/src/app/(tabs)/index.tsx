@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, ScrollView, StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { addNetworkStateListener, getNetworkStateAsync } from 'expo-network';
-import { Ionicons } from '@expo/vector-icons';
 
 import { BlockCard } from '@/components/block-card';
 import { FadeInView } from '@/components/fade-in-view';
@@ -187,24 +186,28 @@ export default function TodayScreen() {
             styles.streakHeroCard,
             { backgroundColor: theme.tintSoft, borderColor: theme.border },
           ]}>
-          <View style={styles.streakHero}>
-            <View style={styles.streakBox}>
-              <ThemedText type="display" style={[styles.streakNumber, { color: theme.tint }]}>
-                {streak ? streak.currentStreak : 0}
-              </ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                day streak
-              </ThemedText>
-            </View>
-            <View style={styles.streakAside}>
-              <Ionicons name="flame" size={40} color={theme.tint} />
+          <ThemedText type="label" themeColor="textSecondary">
+            Streak
+          </ThemedText>
+          <View style={[styles.ledgerRule, { borderColor: theme.border }]} />
+          <View style={styles.streakRow}>
+            <ThemedText type="display" style={{ color: theme.tint }}>
+              {streak ? streak.currentStreak : 0}
+            </ThemedText>
+            <View style={styles.streakMeta}>
+              <ThemedText type="default">consecutive days</ThemedText>
               {pending ? (
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pendingLabel}>
+                <ThemedText type="small" themeColor="textSecondary">
                   Pending sync
                 </ThemedText>
               ) : null}
             </View>
           </View>
+          <View style={[styles.ledgerRule, { borderColor: theme.border }]} />
+          <ThemedText type="small" themeColor="textSecondary">
+            longest {streak ? streak.longestStreak : 0} · {streak ? streak.totalDaysCompleted : 0}{' '}
+            completed in total
+          </ThemedText>
         </FadeInView>
 
         {waking ? (
@@ -284,26 +287,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.four,
     marginTop: Spacing.two,
+    gap: Spacing.two,
   },
-  streakHero: {
+  ledgerRule: {
+    borderTopWidth: 1,
+    marginVertical: Spacing.one,
+  },
+  streakRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'transparent',
+    gap: Spacing.three,
   },
-  streakBox: {
-    alignItems: 'center',
-  },
-  streakNumber: {
-    fontSize: 64,
-    lineHeight: 68,
-  },
-  streakAside: {
-    alignItems: 'center',
+  streakMeta: {
+    alignItems: 'flex-end',
     gap: Spacing.one,
-  },
-  pendingLabel: {
-    alignSelf: 'center',
   },
   wakingLabel: {
     alignSelf: 'center',

@@ -82,7 +82,7 @@ export function BlockCard({ index, label, time, checked, onPress }: BlockCardPro
             {label}
           </ThemedText>
           <ThemedText
-            type="small"
+            type="time"
             themeColor={active ? 'tint' : 'textSecondary'}
             style={active ? styles.activeTime : undefined}>
             {time}

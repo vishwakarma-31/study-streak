@@ -47,7 +47,7 @@ export function LogBlockRow({ index, label, time, completed }: LogBlockRowProps)
           style={completed ? styles.checkedLabel : undefined}>
           {label}
         </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
+        <ThemedText type="time" themeColor="textSecondary">
           {time}
         </ThemedText>
       </View>

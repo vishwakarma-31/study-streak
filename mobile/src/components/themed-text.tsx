@@ -14,7 +14,8 @@ export type ThemedTextProps = TextProps & {
     | 'label'
     | 'link'
     | 'linkPrimary'
-    | 'code';
+    | 'code'
+    | 'time';
   themeColor?: ThemeColor;
 };
 
@@ -35,6 +36,7 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'link' && styles.link,
         type === 'linkPrimary' && styles.linkPrimary,
         type === 'code' && styles.code,
+        type === 'time' && styles.time,
         style,
       ]}
       {...rest}
@@ -44,18 +46,21 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
 
 const styles = StyleSheet.create({
   display: {
+    fontFamily: Fonts.serif,
     fontSize: 64,
     lineHeight: 68,
     fontWeight: '800',
-    letterSpacing: -1,
+    letterSpacing: 0,
   },
   title: {
+    fontFamily: Fonts.serif,
     fontSize: 48,
     fontWeight: '700',
     lineHeight: 52,
     letterSpacing: -0.5,
   },
   subtitle: {
+    fontFamily: Fonts.serif,
     fontSize: 32,
     lineHeight: 40,
     fontWeight: '700',
@@ -95,5 +100,12 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.mono,
     fontWeight: Platform.select({ android: '700' }) ?? '500',
     fontSize: 12,
+  },
+  time: {
+    fontFamily: Fonts.mono,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '500',
+    letterSpacing: 0.5,
   },
 });

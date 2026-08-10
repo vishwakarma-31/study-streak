@@ -172,7 +172,7 @@ export async function ensureAndroidChannel(): Promise<void> {
     sound: 'default',
     enableVibrate: true,
     vibrationPattern: [0, 250, 250, 250],
-    lightColor: '#D97706',
+    lightColor: '#2456A0',
   });
 }
 
