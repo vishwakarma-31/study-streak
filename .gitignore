@@ -3,6 +3,10 @@ node_modules/
 *.log
 .DS_Store
 
+# build artifacts
+dist/
+*.apk
+
 # agent tooling / session data
 .opencode/
 .claude/
