@@ -152,9 +152,19 @@ describe('GET /roadmap', () => {
 });
 
 describe('GET /roadmap/today', () => {
+  const MON = '2026-08-10'; // Monday
+  const TUE = '2026-08-11'; // Tuesday
+  const SAT = '2026-08-15'; // Saturday
+  const SUN = '2026-08-16'; // Sunday
+
+  function setStartDate(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return User.updateOne({ _id: userId }, { $set: { startDate: new Date(y, m - 1, d, 12, 0, 0) } });
+  }
+
   test('returns current phase/week topic and 4 blocks', async () => {
-    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(3) } });
-    const res = await authed(request(app).get('/roadmap/today'));
+    await setStartDate('2026-08-07'); // 3 days before Monday -> week 1
+    const res = await authed(request(app).get(`/roadmap/today?date=${MON}`));
     expect(res.status).toBe(200);
     expect(res.body.phaseNumber).toBe(1);
     expect(res.body.week).toBe(1);
@@ -162,47 +172,86 @@ describe('GET /roadmap/today', () => {
     expect(res.body.blocks).toHaveLength(4);
     expect(res.body.blocks[0].index).toBe(0);
     expect(res.body.resources).toEqual([{ name: 'MDN', platform: 'web' }]);
-    expect(['weekday', 'saturday', 'sunday']).toContain(res.body.dayType);
+    expect(res.body.dayType).toBe('weekday');
   });
 
-  test('advances into week 2 after 10 days', async () => {
-    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(10) } });
-    const res = await authed(request(app).get('/roadmap/today'));
+  test('advances into week 2 after 8 days', async () => {
+    await setStartDate('2026-08-02'); // 8 days before Monday -> week 2
+    const res = await authed(request(app).get(`/roadmap/today?date=${MON}`));
     expect(res.status).toBe(200);
     expect(res.body.week).toBe(2);
     expect(res.body.topic).toBe('Basics');
   });
 
-  test('advances into phase 2 after 20 days', async () => {
-    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(20) } });
-    const res = await authed(request(app).get('/roadmap/today'));
+  test('advances into phase 2 after 15 days', async () => {
+    await setStartDate('2026-07-26'); // 15 days before Monday -> phase 2
+    const res = await authed(request(app).get(`/roadmap/today?date=${MON}`));
     expect(res.status).toBe(200);
     expect(res.body.phaseNumber).toBe(2);
     expect(res.body.topic).toBe('HTTP');
   });
 
-  test('returns the resolved day task on weekdays and null on weekends', async () => {
-    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(3) } });
-    const res = await authed(request(app).get('/roadmap/today'));
+  test('resolves the specific day task on a weekday', async () => {
+    await setStartDate('2026-08-07');
+    const res = await authed(request(app).get(`/roadmap/today?date=${MON}`));
     expect(res.status).toBe(200);
-    const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date().getDay()];
-    if (res.body.dayType === 'weekday') {
-      expect(res.body.task).toBe(`Task ${dayName}`);
-      expect(res.body.needsContent).toBe(false);
-    } else {
-      expect(res.body.task).toBeNull();
-      expect(res.body.needsContent).toBe(false);
-    }
+    expect(res.body.dayType).toBe('weekday');
+    expect(res.body.task).toBe('Task Mon');
+    expect(res.body.needsContent).toBe(false);
+  });
+
+  test('labels blocks with the day task and the DSA/revision rule', async () => {
+    await setStartDate('2026-08-07');
+    const mon = await authed(request(app).get(`/roadmap/today?date=${MON}`));
+    expect(mon.status).toBe(200);
+    expect(mon.body.blocks.map((b) => b.label)).toEqual(['Task Mon', 'Task Mon', 'Task Mon', 'DSA — arrays']);
+    expect(mon.body.blocks.map((b) => b.time)).toEqual(['4:15 am', '5:05 am', '8:00 pm', '8:50 pm']);
+    const tue = await authed(request(app).get(`/roadmap/today?date=${TUE}`));
+    expect(tue.body.blocks[3].label).toBe('Revision');
+  });
+
+  test('returns the distinct Saturday and Sunday block structures', async () => {
+    await setStartDate('2026-08-12'); // 3 days before Saturday
+    const sat = await authed(request(app).get(`/roadmap/today?date=${SAT}`));
+    expect(sat.status).toBe(200);
+    expect(sat.body.dayType).toBe('saturday');
+    expect(sat.body.task).toBeNull();
+    expect(sat.body.blocks).toEqual([
+      { index: 0, label: 'Project AM', time: '4:15 am' },
+      { index: 1, label: 'Project AM continued', time: '7:00 am' },
+      { index: 2, label: 'Extended DSA', time: '9:30 am' },
+      { index: 3, label: 'Project PM', time: '2:00 pm' },
+    ]);
+    await setStartDate('2026-08-13'); // 3 days before Sunday
+    const sun = await authed(request(app).get(`/roadmap/today?date=${SUN}`));
+    expect(sun.status).toBe(200);
+    expect(sun.body.dayType).toBe('sunday');
+    expect(sun.body.blocks).toEqual([
+      { index: 0, label: 'Topic review', time: '4:15 am' },
+      { index: 1, label: 'DSA review', time: '7:00 am' },
+      { index: 2, label: 'Bug fixes', time: '2:00 pm' },
+      { index: 3, label: 'Weekly planning', time: '8:00 pm' },
+    ]);
   });
 
   test('flags needsContent for weekday weeks without day content', async () => {
-    await User.updateOne({ _id: userId }, { $set: { startDate: daysAgo(10) } });
-    const res = await authed(request(app).get('/roadmap/today'));
+    await setStartDate('2026-08-02'); // week 2, days: [], on a Monday
+    const res = await authed(request(app).get(`/roadmap/today?date=${MON}`));
     expect(res.status).toBe(200);
-    if (res.body.dayType === 'weekday') {
-      expect(res.body.task).toBeNull();
-      expect(res.body.needsContent).toBe(true);
-    }
+    expect(res.body.dayType).toBe('weekday');
+    expect(res.body.task).toBeNull();
+    expect(res.body.needsContent).toBe(true);
+  });
+
+  test('rejects an invalid date', async () => {
+    const res = await authed(request(app).get('/roadmap/today?date=not-a-date'));
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeTruthy();
+  });
+
+  test('GET /roadmap/today returns 401 without a token', async () => {
+    const testRes = await request(app).get('/roadmap/today');
+    expect(testRes.status).toBe(401);
   });
 });
 

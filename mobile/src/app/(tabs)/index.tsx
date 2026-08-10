@@ -88,7 +88,7 @@ export default function TodayScreen() {
     setLoading(false);
 
     try {
-      const data = await fetchToday();
+      const data = await fetchToday(date);
       setToday(data);
       await setJson(TODAY_CACHE_KEY, { date, data });
       setError(null);

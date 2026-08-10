@@ -50,7 +50,7 @@ export default function RoadmapScreen() {
     }
 
     try {
-      const t = await fetchToday();
+      const t = await fetchToday(date);
       setToday(t);
       await setJson(TODAY_CACHE_KEY, { date, data: t });
       setError(null);

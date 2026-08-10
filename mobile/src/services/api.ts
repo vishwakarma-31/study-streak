@@ -143,8 +143,8 @@ export async function fetchRoadmap(): Promise<RoadmapPhase[]> {
   return data;
 }
 
-export async function fetchToday(): Promise<TodayData> {
-  const { data } = await api.get<TodayData>('/roadmap/today');
+export async function fetchToday(date?: string): Promise<TodayData> {
+  const { data } = await api.get<TodayData>('/roadmap/today', { params: { date } });
   return data;
 }
 

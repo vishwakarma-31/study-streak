@@ -7,9 +7,18 @@
         "weekNumber": 1,
         "topic": "HTML — structure, semantic tags, forms",
         "resources": [
-          { "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)", "platform": "YouTube" },
-          { "name": "Kevin Powell — CSS playlist", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Kevin Powell — CSS playlist",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Git & GitHub for Beginners",
+            "platform": "YouTube"
+          }
         ],
         "project": "Styled personal portfolio page (static)",
         "dsaFocus": "DSA starts Week 2",
@@ -41,40 +50,130 @@
         "weekNumber": 2,
         "topic": "CSS — box model, flexbox, grid, responsive design",
         "resources": [
-          { "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)", "platform": "YouTube" },
-          { "name": "Kevin Powell — CSS playlist", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Kevin Powell — CSS playlist",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Git & GitHub for Beginners",
+            "platform": "YouTube"
+          }
         ],
         "project": "Styled personal portfolio page (static)",
         "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Box model — margin, border, padding, sizing"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Flexbox — main/cross axis, justify-content, align-items"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "CSS Grid — grid-template-columns/rows, gap, grid areas"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Responsive design — media queries, mobile-first approach"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice day — recreate the portfolio layout responsively using flexbox/grid, no reference"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "Git & GitHub — init, commit, push, branches, .gitignore",
         "resources": [
-          { "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)", "platform": "YouTube" },
-          { "name": "Kevin Powell — CSS playlist", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Kevin Powell — CSS playlist",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Git & GitHub for Beginners",
+            "platform": "YouTube"
+          }
         ],
         "project": "Styled personal portfolio page (static)",
         "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Git basics — init, add, commit, status, log"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Branching — create/switch/merge branches"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "GitHub — remote repos, push, pull, clone"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": ".gitignore, resolving basic merge conflicts"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice day — push the portfolio project to GitHub with a proper commit history"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "Build the portfolio project — combine HTML + CSS + push to GitHub",
         "resources": [
-          { "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)", "platform": "YouTube" },
-          { "name": "Kevin Powell — CSS playlist", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Git & GitHub for Beginners", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — Sigma Web Dev Course (Hindi)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Kevin Powell — CSS playlist",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Git & GitHub for Beginners",
+            "platform": "YouTube"
+          }
         ],
         "project": "Styled personal portfolio page (static)",
         "dsaFocus": "Arrays, strings — 2 easy problems/week in Python, low intensity, building the habit",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Plan page structure & content (wireframe on paper/Figma)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Build HTML structure for all sections"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Style with CSS (layout, responsiveness)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Polish — cross-browser check, accessibility basics (alt text, semantic tags)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Deploy — push final version to GitHub, add README"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -86,97 +185,313 @@
         "weekNumber": 1,
         "topic": "Variables, data types, operators",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "var/let/const, primitive data types"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Arithmetic & assignment operators"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Comparison & logical operators"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Type coercion & conversion"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — small exercises mixing all of the above"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "Conditionals (if/else, switch) and loops",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "if/else, else if"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "switch statements"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "for loops"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "while / do-while loops"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build FizzBuzz or a simple number-guessing script"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "Functions, scope",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Function declarations vs expressions"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Parameters, default values, return values"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Local vs global scope"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Nested functions, intro to recursion"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — refactor earlier exercises into reusable functions"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "Arrays and array methods (map, filter, reduce basics)",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Array basics — indexing, push/pop/shift/unshift"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "map()"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "filter()"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "reduce()"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — use map/filter/reduce together on a sample dataset"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "Objects, `this` keyword",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Object literals, properties, methods"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Nested objects, accessing/updating properties"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "`this` keyword in object methods"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Object.keys/values/entries"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — model a real-world entity (e.g. a student record) as objects"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "DOM selection & manipulation",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "querySelector/querySelectorAll, getElementById"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Changing text/content, innerHTML vs textContent"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Modifying styles and classes via JS"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Creating and appending new elements dynamically"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a dynamic list (add/remove items) with plain JS"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "Events & event listeners",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "addEventListener, click events"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Form events — submit, input, change"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Event object, preventDefault()"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Event delegation basics"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — wire up interactivity for the to-do list app"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Project week — build the to-do list / calculator, tying everything together",
         "resources": [
-          { "name": "CodeWithHarry — JavaScript course", "platform": "YouTube" },
-          { "name": "Akshay Saini — Namaste JavaScript", "platform": "YouTube" }
+          {
+            "name": "CodeWithHarry — JavaScript course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Akshay Saini — Namaste JavaScript",
+            "platform": "YouTube"
+          }
         ],
         "project": "Interactive to-do list or calculator (vanilla JS)",
         "dsaFocus": "Arrays, strings, basic recursion — regular Mon/Wed/Fri slot",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Set up HTML/CSS structure for the project"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Implement core logic (add/complete/delete items or calculator operations)"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Wire up DOM manipulation + event listeners"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Edge cases & bug fixing"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Polish, push to GitHub, write README"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -188,97 +503,313 @@
         "weekNumber": 1,
         "topic": "ES6+ syntax — let/const, arrow functions, template literals",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "let/const review, arrow functions"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Template literals"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Default parameters, rest parameters"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Enhanced object literals"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — refactor earlier project code to ES6+ style"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "Destructuring, spread/rest operators",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Array destructuring"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Object destructuring"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Spread operator (arrays, objects)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Rest operator in functions"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — apply destructuring/spread across earlier exercises"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "Higher-order functions, closures",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Functions as values, passing functions as arguments"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Returning functions from functions"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Closures — concept and simple examples"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Practical closure use cases (counters, private state)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a small closure-based counter/module"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "Promises",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Callback functions & callback hell (why promises exist)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Promise basics — then/catch"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Chaining promises"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Promise.all basics"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — simulate async operations with setTimeout + Promises"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "Async/await",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "async/await syntax basics"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Error handling with try/catch in async functions"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Converting promise chains to async/await"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Sequential vs parallel async calls"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — rewrite Week 4's promise exercises using async/await"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "Fetch API — calling a public API",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "fetch() basics, GET requests"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Handling JSON responses"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "POST requests with fetch"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Working with a public API (weather or GitHub API)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — fetch and display real data from a public API"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "Error handling — try/catch, handling failed API calls",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "try/catch/finally basics"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Custom error handling for failed API calls"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Validating user input before requests"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Displaying user-friendly error states in UI"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — add robust error handling to the Week 6 API project"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Project week — build the weather app / GitHub profile finder",
         "resources": [
-          { "name": "Namaste JavaScript — async JS module", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — Async JS / Fetch API", "platform": "YouTube" }
+          {
+            "name": "Namaste JavaScript — async JS module",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — Async JS / Fetch API",
+            "platform": "YouTube"
+          }
         ],
         "project": "Weather app or GitHub profile finder using a public API",
         "dsaFocus": "Recursion, basic sorting/searching",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Set up project structure, plan API integration"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Build the search/input UI"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Wire up fetch + display results"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Add loading and error states"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Polish, push to GitHub, write README"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -290,97 +821,313 @@
         "weekNumber": 1,
         "topic": "JSX, components basics",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "JSX syntax, embedding expressions"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Functional components basics"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Component composition (components inside components)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Fragments, rendering lists with .map()"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build 3–4 small static components"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "Props",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Passing props to components"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Prop types, default props"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "children prop"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Passing functions as props"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a reusable card/button component with props"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "State, `useState` hook",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "useState basics"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Updating state correctly (avoiding direct mutation)"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Multiple state variables vs object state"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Lifting state up"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a counter/toggle app using state"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "`useEffect` hook, side effects",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "useEffect basics, dependency array"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Effects on mount vs every render"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Cleanup functions in useEffect"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Fetching data with useEffect"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — fetch and display data on component mount"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "Conditional rendering, lists & keys",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Conditional rendering patterns (ternary, &&)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Rendering lists with map()"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Keys — why they matter, common mistakes"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Combining conditional rendering + lists (empty states)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a filterable list component"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "Forms & controlled components",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Controlled inputs — value + onChange"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Handling multiple form fields"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Form submission handling"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Basic form validation"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a small fully-controlled form"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "React Router — multi-page navigation",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Setting up React Router, basic routes"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Link/NavLink navigation"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Route params (dynamic routes)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Nested routes basics"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — add 2–3 routed pages to the week's project"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Project week — build the multi-page React app",
         "resources": [
-          { "name": "Chai aur Code (Hitesh Choudhary) — React course", "platform": "YouTube" },
-          { "name": "Codevolution — React JS playlist", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code (Hitesh Choudhary) — React course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Codevolution — React JS playlist",
+            "platform": "YouTube"
+          }
         ],
         "project": "Multi-page React app (recipe finder, expense tracker)",
         "dsaFocus": "Linked lists, stacks, queues",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Plan app structure & routes"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Build main pages/components"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Wire up state + data flow between components"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Add routing + polish UI"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Bug fixing, push to GitHub, write README"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -392,97 +1139,313 @@
         "weekNumber": 1,
         "topic": "Node.js basics — npm, modules",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Node.js runtime basics, running scripts"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Modules — require/import, built-in modules (fs, path)"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "npm basics — package.json, installing packages"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Creating a basic HTTP server with Node's http module"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a tiny script using fs + a small CLI tool"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "Express setup, basic routing",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Express setup, basic server"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Basic routes — GET/POST"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Route parameters, query strings"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Sending JSON responses, status codes"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build 3–4 basic routes for a sample resource"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "Middleware, request/response handling",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "What middleware is, built-in middleware (express.json())"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Writing custom middleware"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Middleware order & next()"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Third-party middleware (cors, morgan)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — add logging + JSON parsing middleware to the server"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "REST API design — CRUD routes",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "REST principles, resource naming conventions"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "GET (list + single) routes"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "POST (create) routes"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "PUT/PATCH (update) and DELETE routes"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build full CRUD routes for one resource (in-memory data)"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "Testing APIs with Postman",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Postman basics — sending requests, collections"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Testing GET/POST requests"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Testing PUT/PATCH/DELETE"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Environment variables in Postman, saving requests"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — build a full Postman collection for Week 4's API"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "Project structure / MVC pattern basics",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "MVC pattern concept"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Splitting routes into separate files"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Controllers — separating logic from routes"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Organizing a scalable Express project structure"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — refactor Week 4's API into proper MVC structure"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "Error handling in Express",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "try/catch in route handlers"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Centralized error-handling middleware"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Custom error classes/status codes"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Validating request bodies (manual validation)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — add robust error handling across the API"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Project week — build the backend API (test via Postman, no frontend yet)",
         "resources": [
-          { "name": "Chai aur Code — Backend/Node.js + Express series", "platform": "YouTube" },
-          { "name": "CodeWithHarry — Node.js course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Backend/Node.js + Express series",
+            "platform": "YouTube"
+          },
+          {
+            "name": "CodeWithHarry — Node.js course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Backend API for a simple app",
         "dsaFocus": "Trees, basic hashing",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Plan the API's resources & routes"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Build routes + controllers"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Add middleware + error handling"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Test thoroughly with Postman, fix bugs"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Polish, push to GitHub, write README/API docs"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -494,97 +1457,313 @@
         "weekNumber": 1,
         "topic": "MongoDB basics — collections, documents",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "MongoDB concepts — documents, collections"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Setting up MongoDB Atlas, connecting via Compass"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Basic CRUD in the Mongo shell/Compass"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Querying — filters, projections"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — create a sample collection and practice queries"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "Mongoose — schemas & models",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Mongoose setup, connecting to MongoDB from Node"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Defining schemas, field types"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Schema validation rules"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Models — creating documents via Mongoose"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — define schemas for a sample resource"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "CRUD operations with Mongoose",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Create — .save() and .create()"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Read — find(), findById(), filtering"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Update — findByIdAndUpdate()"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Delete — findByIdAndDelete()"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — full CRUD service functions using Mongoose"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "Connecting Express to MongoDB",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Wiring Mongoose connection into an Express app"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Updating Phase 5's routes to use MongoDB instead of in-memory data"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Handling async DB errors in routes"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Environment variables for DB connection strings"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — fully migrate the backend API to MongoDB"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "Password hashing with bcrypt",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Why plaintext passwords are dangerous, hashing concept"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "bcrypt basics — hash(), compare()"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Building a register route with hashed passwords"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Building a login route that compares hashes"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — test register/login flow with Postman"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "JWT tokens — login/signup flow",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "JWT concept — what's in a token, how it's signed"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Generating a JWT on login"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Sending/storing the token (headers vs cookies, tradeoffs)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Verifying JWTs on incoming requests"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — complete login flow returning a working JWT"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "Protected routes, auth middleware",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Writing JWT verification middleware"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Applying middleware to protected routes"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Attaching user info to the request object"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Handling expired/invalid tokens gracefully"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — protect earlier CRUD routes, test with/without token"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Project week — connect Phase 5's API to a real database with login/signup",
         "resources": [
-          { "name": "freeCodeCamp — MongoDB Crash Course", "platform": "YouTube" },
-          { "name": "Web Dev Simplified — JWT Authentication", "platform": "YouTube" }
+          {
+            "name": "freeCodeCamp — MongoDB Crash Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Web Dev Simplified — JWT Authentication",
+            "platform": "YouTube"
+          }
         ],
         "project": "Full backend with database + authentication",
         "dsaFocus": "Graphs basics, more hashing problems",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Plan the combined project scope"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Wire up models, routes, DB"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Add auth (register/login/protected routes)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Test thoroughly, fix bugs"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Polish, push to GitHub, write README"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -596,97 +1775,313 @@
         "weekNumber": 1,
         "topic": "Connecting React frontend to Express backend (axios/fetch)",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Setting up axios in a React app, basic GET request"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Handling POST requests from a form"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Environment variables for API base URL"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "CORS — what it is, configuring it on the backend"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — connect one full CRUD flow frontend-to-backend"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "Handling API data in React — loading and error states",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Loading state patterns while fetching"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Error state patterns, displaying error messages"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Empty state handling"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Combining loading/error/data states cleanly"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — add proper loading/error UI to Week 1's integration"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "Building full CRUD UI connected to the backend",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "List view — displaying fetched data"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Create — form connected to POST"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Update — edit form connected to PUT/PATCH"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Delete — with confirmation"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — complete full CRUD UI end-to-end"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "Auth flow in frontend — login/signup pages, storing tokens",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Login/signup forms connected to backend"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Storing the JWT (and where — tradeoffs)"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Attaching the token to authenticated requests"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Protected routes/pages in the frontend"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — complete login-to-protected-page flow"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "UI/UX polish",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Consistent styling pass across all pages"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Responsive check on mobile widths"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Loading skeletons/spinners polish"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Accessibility pass — labels, contrast, keyboard nav basics"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — full app walkthrough, fix rough edges"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "Deployment — backend (Render/Railway) + database (MongoDB Atlas)",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Preparing the backend for deployment (env vars, scripts)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Deploying to Render/Railway"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Connecting deployed backend to MongoDB Atlas (production)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Testing the live API with Postman"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — fix any deployment-specific bugs"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "Deployment — frontend (Vercel/Netlify), environment variables",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Preparing the frontend build (env vars for API URL)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Deploying to Vercel/Netlify"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Connecting deployed frontend to deployed backend"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Testing the fully live app end-to-end"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — fix any live-environment bugs"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Testing, bug fixing, final touches",
         "resources": [
-          { "name": "Chai aur Code — Full stack project series (covers deployment)", "platform": "YouTube" },
-          { "name": "freeCodeCamp — Full Stack MERN course", "platform": "YouTube" }
+          {
+            "name": "Chai aur Code — Full stack project series (covers deployment)",
+            "platform": "YouTube"
+          },
+          {
+            "name": "freeCodeCamp — Full Stack MERN course",
+            "platform": "YouTube"
+          }
         ],
         "project": "Complete full-stack app, deployed and live — strongest resume piece",
         "dsaFocus": "Dynamic programming basics, mixed medium-level practice",
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Full manual QA pass across all features"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Fix bugs found in QA"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Cross-device/browser check"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Final polish, README + screenshots for portfolio"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Ship it — confirm everything works live"
+          }
+        ],
+        "needsContent": false
       }
     ]
   },
@@ -698,81 +2093,297 @@
         "weekNumber": 1,
         "topic": "DSA revision — arrays/strings/recursion mixed problems",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Array problems (easy set)"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "String problems (easy set)"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Recursion basics revisited"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Mixed array/string mediums"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Timed practice set — arrays/strings/recursion"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 2,
         "topic": "DSA revision — trees/graphs/DP mixed problems",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Tree traversal problems"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Graph basics (BFS/DFS) problems"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "DP basics (1D DP problems)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Mixed medium set"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Timed practice set — trees/graphs/DP"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 3,
         "topic": "System design basics — client-server, REST, DB design fundamentals",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Client-server model, REST fundamentals recap"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Basic DB design — normalization basics"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Caching, load balancing concepts (fresher-level overview)"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Designing a simple system on paper (e.g. a URL shortener)"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Practice — explain the full-stack project's architecture out loud"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 4,
         "topic": "Resume + GitHub + LinkedIn polish",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Resume review against target roles"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "GitHub — clean up repos, pin best projects, README quality"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "LinkedIn — profile polish, project posts"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Prepare a 2-minute \"walk me through your resume\" pitch"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Get feedback from a peer/mentor, iterate"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 5,
         "topic": "Mock interviews — technical rounds",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Mock DSA round"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Review mistakes from Monday's mock"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Mock project deep-dive round"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Review mistakes from Wednesday's mock"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Full mock technical interview, timed"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 6,
         "topic": "Mock interviews — behavioral + project deep-dive prep",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Common behavioral questions — prepare STAR-format answers"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Mock behavioral round"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Project deep-dive — be ready to explain every technical decision"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Mock project deep-dive round"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Full mock interview combining both"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 7,
         "topic": "Applications + company-specific prep",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Build a target company list, tailor resume per role type"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Apply — batch 1"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Research 2–3 target companies' interview patterns"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Apply — batch 2"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Follow up on earlier applications, apply — batch 3"
+          }
+        ],
+        "needsContent": false
       },
       {
         "weekNumber": 8,
         "topic": "Final review — patch weak areas identified in mocks",
         "resources": [
-          { "name": "Striver (takeUforward) — A2Z DSA Course", "platform": "YouTube" },
-          { "name": "Apna College — DSA in Python playlist", "platform": "YouTube" }
+          {
+            "name": "Striver (takeUforward) — A2Z DSA Course",
+            "platform": "YouTube"
+          },
+          {
+            "name": "Apna College — DSA in Python playlist",
+            "platform": "YouTube"
+          }
         ],
-        "days": [],
-        "needsContent": true
+        "days": [
+          {
+            "dayOfWeek": "Mon",
+            "task": "Revisit weakest DSA topic from mocks"
+          },
+          {
+            "dayOfWeek": "Tue",
+            "task": "Revisit weakest project-explanation gaps"
+          },
+          {
+            "dayOfWeek": "Wed",
+            "task": "Light DSA practice, stay sharp"
+          },
+          {
+            "dayOfWeek": "Thu",
+            "task": "Rest / light review — avoid cramming before interviews"
+          },
+          {
+            "dayOfWeek": "Fri",
+            "task": "Final confidence check — one more full mock interview if scheduled"
+          }
+        ],
+        "needsContent": false
       }
     ]
   }

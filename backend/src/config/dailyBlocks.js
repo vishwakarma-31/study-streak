@@ -1,9 +1,9 @@
 const DAILY_BLOCKS = {
   weekday: [
-    { index: 0, label: 'Watch/learn', time: '4:15 am' },
-    { index: 1, label: 'Practice', time: '5:05 am' },
-    { index: 2, label: 'Apply/project', time: '8:00 pm' },
-    { index: 3, label: null, time: '8:50 pm' }, // DSA Mon/Wed/Fri, Revision Tue/Thu
+    { index: 0, label: null, time: '4:15 am' },
+    { index: 1, label: null, time: '5:05 am' },
+    { index: 2, label: null, time: '8:00 pm' },
+    { index: 3, label: null, time: '8:50 pm' },
   ],
   saturday: [
     { index: 0, label: 'Project AM', time: '4:15 am' },
