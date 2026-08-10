@@ -28,6 +28,18 @@ export function isNotFound(err: unknown): boolean {
   return isAxiosError(err) && err.response?.status === 404;
 }
 
+// Render's free tier sleeps after ~15 min idle. Warming up on app start/foreground
+// absorbs the slow cold-start into this /health call (60s timeout) instead of the
+// user's first real request of the day.
+export async function warmUpServer(): Promise<boolean> {
+  try {
+    await api.get('/health', { timeout: 60000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export type Block = {
   index: number;
   label: string | null;
@@ -85,6 +97,26 @@ export type DailyLogEntry = {
 
 export async function fetchHistory(from?: string, to?: string): Promise<DailyLogEntry[]> {
   const { data } = await api.get<DailyLogEntry[]>('/logs/history', { params: { from, to } });
+  return data;
+}
+
+export type HistoryDetailBlock = {
+  index: number;
+  label: string;
+  time: string;
+  completed: boolean;
+};
+
+export type HistoryDetail = {
+  date: string;
+  dayType: 'weekday' | 'saturday' | 'sunday';
+  blocks: HistoryDetailBlock[];
+  note: string;
+  dsaProblems: DsaProblem[];
+};
+
+export async function fetchLog(date: string): Promise<HistoryDetail> {
+  const { data } = await api.get<HistoryDetail>(`/logs/${date}`);
   return data;
 }
 

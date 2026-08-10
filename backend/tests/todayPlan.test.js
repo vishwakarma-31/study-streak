@@ -1,4 +1,4 @@
-const { resolveWeek, dayTaskFor, resolveToday, blocksForDay } = require('../src/controllers/roadmapController');
+const { resolveWeek, dayTaskFor, resolveToday, blocksForDay } = require('../src/services/dayPlan');
 
 function dateNDaysAgo(n) {
   const d = new Date();

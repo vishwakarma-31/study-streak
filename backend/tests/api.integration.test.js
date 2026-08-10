@@ -256,20 +256,80 @@ describe('GET /roadmap/today', () => {
 });
 
 describe('GET /logs/:date', () => {
+  function setStartDate(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return User.updateOne({ _id: userId }, { $set: { startDate: new Date(y, m - 1, d, 12, 0, 0) } });
+  }
+
   test('returns null when no log exists', async () => {
     const res = await authed(request(app).get('/logs/2026-08-09'));
     expect(res.status).toBe(200);
     expect(res.body).toBeNull();
   });
 
-  test('returns the log when one exists', async () => {
+  test('returns the per-block detail when a log exists (sunday)', async () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, false],
     });
     const res = await authed(request(app).get('/logs/2026-08-09'));
     expect(res.status).toBe(200);
-    expect(res.body.sessionsCompletedCount).toBe(3);
-    expect(res.body.dayCompleted).toBe(true);
+    expect(res.body.date).toBe('2026-08-09');
+    expect(res.body.dayType).toBe('sunday');
+    expect(res.body.blocks.map((b) => b.index)).toEqual([1, 2, 3, 4]);
+    expect(res.body.blocks.map((b) => b.completed)).toEqual([true, true, true, false]);
+    expect(res.body.blocks.map((b) => b.label)).toEqual([
+      'Topic review',
+      'DSA review',
+      'Bug fixes',
+      'Weekly planning',
+    ]);
+    expect(res.body.blocks.map((b) => b.time)).toEqual(['4:15 am', '7:00 am', '2:00 pm', '8:00 pm']);
+  });
+
+  test('resolves the weekday task labels for a past date', async () => {
+    await setStartDate('2026-08-07'); // 3 days before Monday -> week 1
+    await authed(request(app).post('/logs/2026-08-10')).send({
+      sessionsCompleted: [true, false, true, false],
+    });
+    const res = await authed(request(app).get('/logs/2026-08-10'));
+    expect(res.status).toBe(200);
+    expect(res.body.date).toBe('2026-08-10');
+    expect(res.body.dayType).toBe('weekday');
+    expect(res.body.blocks.map((b) => b.label)).toEqual(['Task Mon', 'Task Mon', 'Task Mon', 'DSA — arrays']);
+    expect(res.body.blocks.map((b) => b.completed)).toEqual([true, false, true, false]);
+    expect(res.body.blocks.map((b) => b.time)).toEqual(['4:15 am', '5:05 am', '8:00 pm', '8:50 pm']);
+  });
+
+  test('maps the saturday schedule for a saturday date', async () => {
+    await setStartDate('2026-08-12'); // 3 days before Saturday
+    await authed(request(app).post('/logs/2026-08-15')).send({
+      sessionsCompleted: [true, true, true, true],
+    });
+    const res = await authed(request(app).get('/logs/2026-08-15'));
+    expect(res.status).toBe(200);
+    expect(res.body.dayType).toBe('saturday');
+    expect(res.body.blocks.map((b) => b.label)).toEqual([
+      'Project AM',
+      'Project AM continued',
+      'Extended DSA',
+      'Project PM',
+    ]);
+    expect(res.body.blocks.every((b) => b.completed)).toBe(true);
+  });
+
+  test('includes note and dsaProblems in the detail', async () => {
+    await DailyLog.create({
+      userId,
+      date: '2026-08-11',
+      sessionsCompleted: [true, true, true, false],
+      note: 'Felt good today',
+      dsaProblems: [{ title: 'Two Sum', difficulty: 'Easy' }],
+    });
+    const res = await authed(request(app).get('/logs/2026-08-11'));
+    expect(res.status).toBe(200);
+    expect(res.body.dayType).toBe('weekday');
+    expect(res.body.note).toBe('Felt good today');
+    expect(res.body.dsaProblems).toEqual([{ title: 'Two Sum', difficulty: 'Easy' }]);
   });
 
   test('rejects a malformed date', async () => {

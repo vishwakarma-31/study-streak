@@ -10,7 +10,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
-import { extractApiError, fetchStreak, fetchToday, isNotFound, type StreakData, type TodayData } from '@/services/api';
+import { extractApiError, fetchStreak, fetchToday, isNotFound, warmUpServer, type StreakData, type TodayData } from '@/services/api';
 import { TODAY_CACHE_KEY, STREAK_CACHE_KEY } from '@/services/cache-keys';
 import { formatDayLabel, toDateString } from '@/services/date';
 import { flushPendingSync, getLocalLog, getPendingDates, isPending, setLocalLog } from '@/services/logs';
@@ -18,6 +18,9 @@ import { getJson, setJson } from '@/services/storage';
 import { useTheme } from '@/hooks/use-theme';
 
 const EMPTY_CHECKED = [false, false, false, false];
+
+const POLL_INTERVAL_MS = 150000;
+const SLOW_REQUEST_MS = 1200;
 
 export default function TodayScreen() {
   const { status } = useAuth();
@@ -28,7 +31,22 @@ export default function TodayScreen() {
   const [pending, setPending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [waking, setWaking] = useState(false);
   const checkedRef = useRef<boolean[]>(EMPTY_CHECKED);
+  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const beginWarm = useCallback(() => {
+    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+    slowTimerRef.current = setTimeout(() => setWaking(true), SLOW_REQUEST_MS);
+  }, []);
+
+  const endWarm = useCallback(() => {
+    if (slowTimerRef.current) {
+      clearTimeout(slowTimerRef.current);
+      slowTimerRef.current = null;
+    }
+    setWaking(false);
+  }, []);
 
   const refreshStreak = useCallback(async () => {
     try {
@@ -49,23 +67,28 @@ export default function TodayScreen() {
     if (hasPending) {
       const network = await getNetworkStateAsync();
       if (network.isConnected !== false) {
-        const { syncedDates, serverLogs } = await flushPendingSync();
+        beginWarm();
+        try {
+          const { syncedDates, serverLogs } = await flushPendingSync();
 
-        const server = serverLogs[date];
-        const stillPending = await isPending(date);
-        if (server && !stillPending) {
-          checkedRef.current = server;
-          setChecked(server);
-        }
+          const server = serverLogs[date];
+          const stillPending = await isPending(date);
+          if (server && !stillPending) {
+            checkedRef.current = server;
+            setChecked(server);
+          }
 
-        if (syncedDates.length > 0) {
-          await refreshStreak();
+          if (syncedDates.length > 0) {
+            await refreshStreak();
+          }
+        } finally {
+          endWarm();
         }
       }
     }
 
     setPending(await isPending(date));
-  }, [refreshStreak]);
+  }, [refreshStreak, beginWarm, endWarm]);
 
   const refresh = useCallback(async () => {
     if (status !== 'signedIn') return;
@@ -87,7 +110,9 @@ export default function TodayScreen() {
     setPending(await isPending(date));
     setLoading(false);
 
+    beginWarm();
     try {
+      await warmUpServer();
       const data = await fetchToday(date);
       setToday(data);
       await setJson(TODAY_CACHE_KEY, { date, data });
@@ -96,10 +121,12 @@ export default function TodayScreen() {
       if (!hasUsableCache) {
         setError(extractApiError(err));
       }
+    } finally {
+      endWarm();
     }
 
     await refreshStreak();
-  }, [status, refreshStreak]);
+  }, [status, refreshStreak, beginWarm, endWarm]);
 
   useEffect(() => {
     if (status !== 'signedIn') return;
@@ -124,12 +151,13 @@ export default function TodayScreen() {
     });
     const interval = setInterval(() => {
       void syncNow();
-    }, 30000);
+    }, POLL_INTERVAL_MS);
 
     return () => {
       netSub.remove();
       sub.remove();
       clearInterval(interval);
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
     };
   }, [status, refresh, syncNow]);
 
@@ -178,6 +206,12 @@ export default function TodayScreen() {
             </View>
           </View>
         </FadeInView>
+
+        {waking ? (
+          <ThemedText type="small" themeColor="textSecondary" style={styles.wakingLabel}>
+            Waking up the server — the first request of the day can take a moment.
+          </ThemedText>
+        ) : null}
 
         {loading && today === null ? (
           <ActivityIndicator size="large" style={styles.spacer} />
@@ -270,6 +304,10 @@ const styles = StyleSheet.create({
   },
   pendingLabel: {
     alignSelf: 'center',
+  },
+  wakingLabel: {
+    alignSelf: 'center',
+    textAlign: 'center',
   },
   spacer: {
     marginTop: Spacing.six,

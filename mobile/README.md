@@ -1,56 +1,54 @@
-# Welcome to your Expo app 👋
+# Study Streak — mobile app
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native (Expo SDK 57) companion app for the single-user study streak system. The streak is
+computed and stored server-side; the client only displays it. Days count as complete when at
+least 3 of the 4 daily blocks are checked off.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Point the app at your backend with a `.env.local` file (defaults to the deployed Render API):
 
-### Other setup steps
+```
+EXPO_PUBLIC_API_URL=https://study-streak-api.onrender.com
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Build an APK
 
-## Learn more
+```bash
+npx eas build --platform android --profile preview
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Standalone builds (not Expo Go) are required for notifications — Expo Go removed
+`expo-notifications` on Android.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Notifications on OEM Android
 
-## Join the community
+Reminders are scheduled locally via `expo-notifications`. On many Chinese OEM ROMs the system
+silently kills an app's notifications when its battery saver is active, even if the app scheduled
+them correctly. This cannot be fixed from inside the app — the user must allow the app in the
+phone's battery settings. The app shows a one-time hint (onboarding + Settings) that deep-links to
+`android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS`.
 
-Join our community of developers creating universal apps.
+OEMs commonly affected (all of these need battery optimization disabled / autostart enabled for
+the app):
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Xiaomi / Redmi** (MIUI / HyperOS) — Settings → Apps → Manage apps → Study Streak → Battery saver → No restrictions; also Autostart on
+- **OPPO / OnePlus** (ColorOS / OxygenOS) — Settings → Battery → App battery management → Study Streak → Allow
+- **Vivo** (Funtouch / OriginOS) — Settings → Battery → Background power consumption management → Study Streak → Allow background running
+- **Realme** (Realme UI) — same path as OPPO (ColorOS-based)
+
+Samsung, Pixel, and stock Android generally deliver local notifications reliably without these
+steps.
+
+## Tests
+
+```bash
+npm test        # jest (offline queue/merge + date helpers)
+npx tsc --noEmit
+npx expo lint
+```

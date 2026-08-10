@@ -29,6 +29,7 @@ function RootNavigator() {
         <Stack.Screen name="login" />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="history-detail" options={{ presentation: 'modal' }} />
       </Stack>
     </>
   );

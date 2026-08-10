@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Redirect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { Redirect } from 'expo-router';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { FadeInView } from '@/components/fade-in-view';
 import { Screen } from '@/components/screen';
@@ -16,11 +16,19 @@ function formatHistoryDate(date: string): string {
   return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
-function HistoryRow({ entry }: { entry: DailyLogEntry }) {
+function HistoryRow({ entry, onPress }: { entry: DailyLogEntry; onPress: () => void }) {
   const theme = useTheme();
 
   return (
-    <View style={[styles.rowCard, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`View ${formatHistoryDate(entry.date)}`}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.rowCard,
+        { backgroundColor: theme.backgroundElement, borderColor: theme.border },
+        pressed && styles.rowPressed,
+      ]}>
       <View style={styles.rowTop}>
         <ThemedText type="smallBold">{formatHistoryDate(entry.date)}</ThemedText>
         {entry.dayCompleted ? (
@@ -52,13 +60,15 @@ function HistoryRow({ entry }: { entry: DailyLogEntry }) {
           ))}
         </View>
       ) : null}
-    </View>
+      <Ionicons name="chevron-forward" size={16} color={theme.textSecondary} style={styles.chevron} />
+    </Pressable>
   );
 }
 
 export default function HistoryScreen() {
   const { status } = useAuth();
   const theme = useTheme();
+  const router = useRouter();
   const [logs, setLogs] = useState<DailyLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -146,7 +156,12 @@ export default function HistoryScreen() {
       <FlatList
         data={logs}
         keyExtractor={(item) => item.date}
-        renderItem={({ item }) => <HistoryRow entry={item} />}
+        renderItem={({ item }) => (
+          <HistoryRow
+            entry={item}
+            onPress={() => router.push({ pathname: '/history-detail', params: { date: item.date } })}
+          />
+        )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={logs.length === 0 ? styles.emptyContent : styles.content}
         refreshControl={
@@ -193,11 +208,20 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     gap: Spacing.two,
   },
+  rowPressed: {
+    opacity: 0.7,
+  },
+  chevron: {
+    position: 'absolute',
+    right: Spacing.three,
+    top: Spacing.three,
+  },
   rowTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.two,
+    paddingRight: Spacing.five,
   },
   pill: {
     flexDirection: 'row',

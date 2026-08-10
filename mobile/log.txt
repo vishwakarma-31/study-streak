@@ -1,0 +1,10 @@
+env: load .env.local
+env: export EXPO_PUBLIC_API_URL
+Starting project at C:\Projects\study-streak\mobile
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+Waiting on http://localhost:8099
+
+Logs for your project will appear below.

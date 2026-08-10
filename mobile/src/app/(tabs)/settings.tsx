@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 
+import { BatteryOptimizationNote } from '@/components/battery-optimization-note';
 import { FadeInView } from '@/components/fade-in-view';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -16,6 +17,7 @@ import {
   requestReminderPermission,
   scheduleReminders,
 } from '@/services/notifications';
+import { getBatteryHintShown, setBatteryHintShown } from '@/services/storage';
 
 export default function SettingsScreen() {
   const { status, signOut } = useAuth();
@@ -25,6 +27,7 @@ export default function SettingsScreen() {
   const [remindersLoading, setRemindersLoading] = useState(true);
   const [permissionBlocked, setPermissionBlocked] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [showBatteryHint, setShowBatteryHint] = useState(false);
 
   useEffect(() => {
     Promise.resolve()
@@ -53,6 +56,9 @@ export default function SettingsScreen() {
           await scheduleReminders();
           setRemindersOn(true);
           setPermissionBlocked(false);
+          if (Platform.OS === 'android' && !(await getBatteryHintShown())) {
+            setShowBatteryHint(true);
+          }
         } else {
           setRemindersOn(false);
           setPermissionBlocked(true);
@@ -69,6 +75,11 @@ export default function SettingsScreen() {
   async function handleSignOut() {
     await signOut();
     router.replace('/login');
+  }
+
+  async function handleBatteryHintDone() {
+    await setBatteryHintShown();
+    setShowBatteryHint(false);
   }
 
   return (
@@ -114,6 +125,10 @@ export default function SettingsScreen() {
             </ThemedText>
           ))}
         </View>
+
+        {showBatteryHint ? (
+          <BatteryOptimizationNote onDone={handleBatteryHintDone} />
+        ) : null}
       </View>
 
       <FadeInView>

@@ -2,7 +2,7 @@
 
 Update this file at the end of every session. Check off subtasks as completed. Add a short note under a phase if something is blocked, half-done, or deviated from plan.
 
-**Current active phase:** 14
+**Current active phase:** 17
 
 ---
 
@@ -180,26 +180,21 @@ Notes:
 - Verified: backend `npm test` 87/87 (new history suite: default-window exclusion, contract-field shape, from/to filter, empty array, invalid from/to, from>to, auth-required), mobile `tsc --noEmit` clean, `expo lint` clean.
 - **Not yet done:** live verification against the deployed backend (`GET /logs/history` reaches Render on the next deploy) and visual review of the list on-device.
 - **Session 2026-08-10 (re-verify):** Phase 13 re-checked against the brief. Backend: `GET /logs/history` confirmed in `logsController.js` (from/to YYYY-MM-DD validation, `from must not be after to` 400, 60-day default window via `DEFAULT_WINDOW_DAYS`, query selects `date sessionsCompletedCount dayCompleted note dsaProblems -_id`, sorted date desc) and registered in `routes/logs.js:9` **before** `/:date`. Mobile: History screen wired via `fetchHistory()` (api.ts) — FlatList reverse-chronological rows (date, Completed pill vs "X of 4 blocks", up-to-2-line note, DSA title chips), pull-to-refresh, calm error state, real designed empty state ("Nothing here yet" + icon), "Last 60 days" header. Green: backend 102/102 (history suite at `api.integration.test.js:232` — default window, contract shape, from/to filters, invalid from/to, from>to, auth-required), mobile `tsc` clean, `expo lint` clean. No code changes needed.
-## Phase 14 — Roadmap Day-Level Content
+## Phase 14 — Roadmap Day-Level Content (COMPLETE)
+- [x] BUG FIX: day-type resolution corrected (Mon–Fri vs Sat vs Sun no longer mixed up — confirmed broken: Monday was showing Sunday's block labels/times)
 - [x] `days` array added to `Roadmap` model weeks sub-schema (`_id: false`, `{ dayOfWeek, task }`)
-- [x] `needsContent: true` flag on every week — with `days: []` when it's a weekday-without-content week
+- [x] All 60 weeks across all 8 phases populated from `.opencode/skills/full-day-by-day-curriculum.md` (content already fully written — no authoring left, just wiring)
 - [x] `GET /roadmap/today` resolves the day-specific task (pure `resolveWeek`/`dayTaskFor` helpers, exported for tests)
-- [x] Phase 1 Week 1 populated with real HTML/CSS day content (worked example, `needsContent: false`)
-- [x] All other weeks flagged `needsContent: true`, listed here as a checklist (start here next session):
-  - [x] Phase 1: Weeks 2–4
-  - [x] Phase 2: Weeks 1–8
-  - [x] Phase 3: Weeks 1–8
-  - [x] Phase 4: Weeks 1–8
-  - [x] Phase 5: Weeks 1–8
-  - [x] Phase 6: Weeks 1–8
-  - [x] Phase 7: Weeks 1–8
-  - [x] Phase 8: Weeks 1–8
+- [x] Today screen displays real task text + correct weekday times (4:15/5:05/8:00/8:50)
 - Notes:
-  - **Backend:** `Roadmap` week sub-schema gained `days: [{ dayOfWeek, task }]` + `needsContent: Boolean` (default true). Seed `roadmap.json` updated by script (original fields byte-identical): P1W1 gets 5 real Mon–Fri day tasks (HTML document structure → semantic tags → lists/links/images/tables → forms → no-reference practice day); the other 59 weeks get `days: []` + `needsContent: true`. Re-seeding is an upsert-by-phaseNumber (`npm run seed`) so the deployed DB picks it up on the next run.
-  - **`GET /roadmap/today`** now returns `task` (the specific day's task on weekdays, `null` on weekends and on weekday weeks whose days aren't authored yet) and `needsContent` (true only for weekday weeks with no day content). Week-position logic refactored into exported pure helpers `resolveWeek(phases, startDate, today)` + `dayTaskFor(week, dayOfWeek)` — same clamping behavior as before, now unit-testable.
-  - **Mobile:** `TodayData` gained `task: string | null` + `needsContent: boolean`. Today screen subtitle shows `task ?? topic` (weekend/week-without-content falls back to the week topic), and a neutral "detailed plan being written" note replaces the phase line when `needsContent` is true — no dark-pattern copy.
-  - **Tests:** backend suite now 102/102 — 12 new deterministic unit tests (`tests/todayPlan.test.js`: per-weekday task lookup, empty-array + missing-key needsContent, weekend null, week advance + roadmap-end clamp + future-start clamp) + 3 integration tests (day-task contract on weekdays, weekend null, needsContent for empty-content week). Mobile `tsc --noEmit` + `expo lint` clean.
-  - **Next:** author `days` for the remaining 59 weeks, one phase at a time (curriculum is human-reviewed, not agent-invented per decisions.md).
+  - **Root cause of the day-type bug:** `GET /roadmap/today` derived the weekday from the **server's UTC clock**, but the user's 4 am IST sessions fall on the previous UTC date — so a Monday morning rendered Sunday's block labels/times. Fix: the endpoint now accepts `?date=YYYY-MM-DD` (the client's local date); the server resolves both the week and the weekday from it (`resolveToday`), invalid dates → 400. Mobile `fetchToday(date)` passes `toDateString(new Date())` on the Today + Roadmap screens. Server stays authoritative for all week-position math (`resolveWeek` unchanged).
+  - **Backend:** `Roadmap` week sub-schema gained `days: [{ dayOfWeek, task }]` + `needsContent: Boolean` (default true). Seed `roadmap.json` updated by script (original fields byte-identical). All 60 weeks' `days` populated directly from `.opencode/skills/full-day-by-day-curriculum.md` via a one-off script (exact curriculum text, copied not paraphrased), `needsContent: false` everywhere; week topics/project/dsaFocus/resources verified identical to the prior seed. `npm run seed` → 8 updated (upsert by phaseNumber; DB reference data, so no backend redeploy needed).
+  - **`GET /roadmap/today`** now returns `task` (the specific day's task on weekdays, `null` on weekends) + `needsContent`. Week-position logic refactored into exported pure helpers `resolveWeek(phases, startDate, today)` + `dayTaskFor(week, dayOfWeek)` — same clamping behavior as before, now unit-testable.
+  - **Block labels:** `blocksForDay` now labels weekday Block 1 S1/S2 + Block 2 S1 with the resolved day task, and Block 2 S2 with `DSA — {phase's dsaFocus}` on Mon/Wed/Fri vs `Revision` on Tue/Thu. Weekend blocks keep their fixed schedules. `dailyBlocks.weekday` labels are now null — the controller fills them in. Known cosmetic quirk: P1W1's dsaFocus is "DSA starts Week 2" (from roadmap.md), so its Block 2 S2 label reads "DSA — DSA starts Week 2" — faithful to the source data.
+  - **Mobile:** `TodayData` gained `task: string | null` + `needsContent: boolean`. Today screen subtitle shows `task ?? topic` (weekend falls back to the week topic), and a neutral "detailed plan being written" note replaces the phase line when `needsContent` is true — no dark-pattern copy.
+  - **Tests:** backend **115/115** (was 102) — the `/roadmap/today` integration suite is now fully deterministic via `?date=` (fixed calendar dates): Monday → weekday task + block-label contract + 4:15/5:05/8:00/8:50 times; distinct Saturday (Project AM) and Sunday (Topic review) structures; needsContent on empty-content weeks; invalid date → 400. New unit tests for `resolveToday` + `blocksForDay` in `tests/todayPlan.test.js`. Mobile jest 17/17, `tsc --noEmit` clean, `expo lint` clean.
+  - **Live verification (re-seeded Atlas DB):** `GET /roadmap/today?date=2026-08-10` (Mon) → `dayType=weekday`, task "HTML document structure & basic tags…", blocks at 4:15/5:05/8:00/8:50; `?date=2026-08-15` (Sat) → Project AM/Extended DSA/Project PM; `?date=2026-08-16` (Sun) → Topic review/DSA review/Bug fixes/Weekly planning.
+  - **Not yet done:** the mobile `?date=` change needs a new APK build (Phase 10) to reach the installed app; visual confirmation on-device.
 
 ## Phase 15 — Safe-Area Fix (UI cut off at the top)
 - [x] `SafeAreaProvider` + `StatusBar` added at the root layout
@@ -213,32 +208,37 @@ Notes:
   - Verified: `tsc --noEmit` clean, `expo lint` clean, `npm test` 17/17, `expo export --platform android` bundles.
   - **Not yet done:** visual confirmation on the device — needs a new EAS build (APK still predates this fix).
 
-Phase 11 — Ranking System
- rankState model + services/rankCalculator.js
- GET /rank endpoint
- Tier/sub-tier/progress bar shown on Progress screen
- Original tier visuals (no copied game branding)
-Notes:
-Phase 12 — UI/UX Revamp
- Checked for ui-ux-pro-max-skill in OpenCode, confirmed Android/RN compatibility (or confirmed not applicable)
- Palette/typography/card-state redesign applied per skills/mobile-ui-patterns.md
- All 5 screens updated
-Notes:
-Phase 13 — Live History Screen
- GET /logs/history endpoint
- History screen wired to real data, reverse-chronological
- Empty state handled
-Notes:
-Phase 14 — Roadmap Day-Level Content (COMPLETE)
-- [x] BUG FIX: day-type resolution corrected (Mon–Fri vs Sat vs Sun no longer mixed up — confirmed broken: Monday was showing Sunday's block labels/times)
-- [x] days array added to roadmap schema
-- [x] All 60 weeks across all 8 phases populated from skills/full-day-by-day-curriculum.md (content already fully written — no authoring left, just wiring)
-- [x] /roadmap/today resolves day-specific task correctly for weekdays
-- [x] Today screen displays real task text + correct weekday times (4:15/5:05/8:00/8:50)
-Notes:
-- **Root cause of the day-type bug:** `GET /roadmap/today` derived the weekday from the **server's UTC clock**, but the user's 4 am IST sessions fall on the previous UTC date — so a Monday morning rendered Sunday's block labels/times. Fix: the endpoint now accepts `?date=YYYY-MM-DD` (the client's local date); the server resolves both the week and the weekday from it (`resolveToday`), invalid dates → 400. Mobile `fetchToday(date)` passes `toDateString(new Date())` on the Today + Roadmap screens. Server stays authoritative for all week-position math (`resolveWeek` unchanged).
-- **Seed repopulated for all 60 weeks** directly from `.opencode/skills/full-day-by-day-curriculum.md` via a one-off script: every week now has a 5-entry `days` array (Mon–Fri, exact curriculum task text — copied, not paraphrased) and `needsContent: false`. Verified programmatically that week topics/project/dsaFocus/resources are identical to the previous seed. `npm run seed` → 8 updated (upsert by phaseNumber; DB reference data, so no backend redeploy needed).
-- **Block labels:** `blocksForDay` now labels weekday Block 1 S1/S2 + Block 2 S1 with the resolved day task, and Block 2 S2 with `DSA — {phase's dsaFocus}` on Mon/Wed/Fri vs `Revision` on Tue/Thu. Weekend blocks keep their fixed schedules. `dailyBlocks.weekday` labels are now null — the controller fills them in. Known cosmetic quirk: P1W1's dsaFocus is "DSA starts Week 2" (from roadmap.md), so its Block 2 S2 label reads "DSA — DSA starts Week 2" — faithful to the source data.
-- **Tests:** backend 115/115 (was 102) — the `/roadmap/today` integration suite is now fully deterministic via `?date=` (fixed calendar dates): Monday → weekday task + block-label contract + 4:15/5:05/8:00/8:50 times; distinct Saturday (Project AM) and Sunday (Topic review) structures; needsContent on empty-content weeks; invalid date → 400. New unit tests for `resolveToday` + `blocksForDay` in `tests/todayPlan.test.js`. Mobile jest 17/17, `tsc --noEmit` clean, `expo lint` clean.
-- **Live verification (re-seeded Atlas DB):** `GET /roadmap/today?date=2026-08-10` (Mon) → `dayType=weekday`, task "HTML document structure & basic tags…", blocks at 4:15/5:05/8:00/8:50; `?date=2026-08-15` (Sat) → Project AM/Extended DSA/Project PM; `?date=2026-08-16` (Sun) → Topic review/DSA review/Bug fixes/Weekly planning.
-- **Not yet done:** the mobile `?date=` change needs a new APK build (Phase 10) to reach the installed app; visual confirmation on-device.
+## Phase 16 — Pre-Handoff Audit (Cold Starts, Notification Reliability, Performance)
+- [x] Render cold-start mitigation implemented (client-side waking state + warm-up)
+- [x] Render cold-start keep-alive documented (`docs/cold-start-keepalive.md`) — cron-job.org keep-alive job created by the human (2026-08-10)
+- [x] Android OEM battery-optimization one-time prompt (onboarding + Settings) with deep-link
+- [x] Mobile README rewritten with the OEM battery note
+- [x] Today screen 30s poll reduced to 2.5-min safety net (check-in / foreground / reconnect are the primary sync paths)
+- [x] Hermes confirmed enabled (build emits `.hbc` Hermes bytecode)
+- [x] Bundle analysis done (1721 modules, 4.3 MB Hermes bundle — normal; dead template files + unused deps flagged below)
+- [x] Red-flag sweep: JWT expiry, APK-vs-commit, Atlas headroom, splash/icon, TODO/FIXME, "Not yet done" list
+- Notes:
+  - **1. Render cold start (mitigation chosen by human: (a) + (c)):**
+    - (c) client-side: `warmUpServer()` added to `services/api.ts` (GET `/health`, 60s timeout). The Today screen calls it at the start of every refresh (mount + app-foreground) before `fetchToday`, so the cold boot is absorbed by the health ping instead of her first data call. A neutral "Waking up the server — the first request of the day can take a moment." note appears only when a request is slow (>1.2s debounce, then clears) — factual, no dark-pattern copy. The same slow-request note wraps the pending-sync flush.
+    - (a) keep-alive: full setup guide in `docs/cold-start-keepalive.md` — cron-job.org hitting `https://study-streak-api.onrender.com/health` every 9 min (anything ≤14 min beats the ~15-min sleep threshold), or UptimeRobot 5-min monitor as an alternative. **Done 2026-08-10:** the human created the cron-job.org job against the health URL, so the free-tier sleep is defeated.
+  - **2. Notification reliability on OEM Android:** new `components/battery-optimization-note.tsx` — plain-language explanation ("some phones — Xiaomi, OPPO, Vivo, Realme, OnePlus — save battery by putting apps to sleep, which can silently stop notifications") + "Open battery settings" button deep-linking via `expo-intent-launcher` to `android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS` + "Got it" dismiss. Shown **once** (AsyncStorage flag `battery_hint_shown`): in onboarding immediately after reminders are granted, and in Settings the first time reminders are enabled (so the already-installed signed-in user actually sees it). New dependency: `expo-intent-launcher ~57.0.1` (available in Expo Go too). `mobile/README.md` rewritten with the per-OEM settings paths.
+  - **3. Performance:** Today screen poll interval 30s → **150s** (`POLL_INTERVAL_MS`) — a safety net only; sync is driven by the check-in toggle, AppState foreground, and the network-reconnect listener. Hermes confirmed: `expo export` emits `entry-*.hbc` (Hermes bytecode). Bundle: 1721 modules, single 4.3 MB Hermes bundle — normal for expo-router + reanimated + axios. **Flagged, not removed:** dead template files `src/components/ui/collapsible.tsx` + `src/components/external-link.tsx` (nothing imports them; they pull in `expo-symbols` + `expo-web-browser`), and likely-unused direct deps with no import in `src/`: `@expo/ui`, `expo-glass-effect`, `expo-image`, `expo-device`, `expo-system-ui` (verify nothing in node_modules requires them before pruning — `expo-font`/`expo-constants`/`expo-linking` look unused in src but are build-time deps of vector-icons/router, so keep). No oversized images (splash/icon are the small template PNGs).
+  - **4. Red-flag sweep findings:**
+    - **JWT expiry:** `expiresIn: '365d'` (`authController.js:7`) — no silent mid-week logout; she won't miss a sync to an expired token. No refresh-token machinery, which is fine at 1 year for a single user.
+    - **APK vs latest commit:** the installed APK (v1, versionCode 1 from Phase 10) predates unmarking fix, Phase 12 UI revamp, Phase 13 history, Phase 14 day-task + `?date=` fix, Phase 15 safe-area fix. Build **1.2.0 (versionCode 3)** matches commit `f12ec53` (Phase 14) — it was built before Phase 16. The Phase 16 changes (warm-up, battery hint, poll interval, READMEs) are **uncommitted and in no build yet** → needs one final EAS build to reach the device.
+    - **Atlas free tier (M0):** 512 MB storage / 500 connections / shared CPU. Current data is 8 roadmap docs + 1 user + a handful of logs — even years of 1-log/day = a few thousand small docs ≈ low single-digit MB. 1-2 concurrent connections. Nowhere near limits; nothing to do.
+    - **Splash + app icon:** still Expo template assets (app.json background colors are themed `#FFFBEB`/`#D97706`, but the PNGs are stock). Cosmetic polish item, not a blocker.
+    - **TODO/FIXME:** none in code. **Open items carried from earlier phases:** (a) badge *earning* logic still doesn't exist (Phase 6) — Progress screen renders from an empty list; (b) Phase 11's +50 RP phase-project bonus still unwired (needs a "project marked complete" signal); (c) tier-up celebration animation deferred; (d) on-device loops: notifications delivery + airplane-mode offline check + visual review all still pending the next installed build; (e) Phase 9/10 device-testing steps require explicit human confirmation.
+  - **Verified:** `tsc --noEmit` clean, `expo lint` clean, jest 17/17. **Human actions pending:** OK a final EAS build so Phase 16 + 17 reach the phone (the keep-alive job was already created by the human).
+
+## Phase 17 — History Detail View (per-block, not just count)
+- [x] Backend: `GET /logs/:date` extended — per-block detail with real task labels, times, and completion state
+- [x] Day-resolution logic extracted to shared service `backend/src/services/dayPlan.js` (one source for `/roadmap/today` + `/logs/:date`)
+- [x] Mobile: History rows tappable → detail modal showing all 4 blocks, note, and DSA problems
+- Notes:
+  - **New contract for `GET /logs/:date`:** `{ date, dayType, blocks: [{ index (1-based), label, time, completed }], note, dsaProblems }`. No log for the date → still returns `null` (contract kept). The old raw-doc fields (`sessionsCompleted`, `sessionsCompletedCount`, `dayCompleted`, `syncedAt`, `_id`) are no longer returned here — nothing consumed them (mobile only POSTs to `/logs/:date`; the list comes from `/logs/history`). `dsaProblems` subdocs are mapped to `{ title, difficulty, link }` so Mongo `_id`s never leak.
+  - **Reuse, not duplication:** the Phase 14 pure helpers (`resolveWeek`, `dayTaskFor`, `resolveToday`, `blocksForDay`, plus `daysSince`/`isValidDate`) moved VERBATIM from `roadmapController.js` to `backend/src/services/dayPlan.js`; roadmapController now imports them, and logsController calls the same `resolveWeek`/`dayTaskFor`/`blocksForDay` with the requested `req.params.date` instead of "today". `tests/todayPlan.test.js` import updated; unit tests unchanged and passing.
+  - **Why this answers her use case:** a past day's blocks show the real task for that date (a weekday's exact task at 4:15/5:05/8:00/8:50 with the DSA label, Project AM/PM on Saturday, Topic review etc. on Sunday) — so an unfinished block is identifiable and she can go back and do it rather than wonder which one she missed.
+  - **Mobile:** new headerless modal route `history-detail` (`Stack` in `_layout.tsx`, `presentation: 'modal'`, custom close button). `services/api.ts` gained `HistoryDetail`/`HistoryDetailBlock` types + `fetchLog(date)`. New read-only `components/log-block-row.tsx` reuses the BlockCard completed/missed visual language — successSoft fill + green check + line-through when completed, 0.55 opacity when missed. Detail view shows dayType label + "X of 4 blocks", the 4 blocks, a note card if present, and DSA problem chips. History rows are now `Pressable`s with a chevron.
+  - **Tests:** backend **118/118** — `GET /logs/:date` suite rewritten (sunday schedule mapping, weekday task-label resolution with completion mapping, saturday schedule, note + dsaProblems inclusion, null when no log, malformed date 400). Mobile: `tsc` clean, lint clean, jest 17/17, `expo export` bundles (1723 modules). Note: the typed-routes file (`.expo/types/router.d.ts`, gitignored) had to be regenerated by briefly running `expo start` — `expo export` alone did not pick up the new `/history-detail` route for tsc.
+  - **Deployment:** backend needs a redeploy to Render to serve the new contract; the mobile detail screen + all Phase 16 changes go out together in the next APK build (still pending).

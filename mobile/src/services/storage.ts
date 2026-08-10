@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEY = 'auth_token';
 const ONBOARDED_KEY = 'has_onboarded';
+const BATTERY_HINT_KEY = 'battery_hint_shown';
 
 export async function getToken(): Promise<string | null> {
   return AsyncStorage.getItem(TOKEN_KEY);
@@ -39,4 +40,12 @@ export async function getOnboarded(): Promise<boolean> {
 
 export async function setOnboarded(): Promise<void> {
   await AsyncStorage.setItem(ONBOARDED_KEY, 'true');
+}
+
+export async function getBatteryHintShown(): Promise<boolean> {
+  return (await AsyncStorage.getItem(BATTERY_HINT_KEY)) === 'true';
+}
+
+export async function setBatteryHintShown(): Promise<void> {
+  await AsyncStorage.setItem(BATTERY_HINT_KEY, 'true');
 }

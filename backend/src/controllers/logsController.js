@@ -1,8 +1,11 @@
 const DailyLog = require('../models/DailyLog');
 const StreakState = require('../models/StreakState');
 const RankState = require('../models/RankState');
+const User = require('../models/User');
+const Roadmap = require('../models/Roadmap');
 const { countCompleted, isDayCompleted, computeStreakFromLogs } = require('../services/streakCalculator');
 const { applyDayCompletion } = require('../services/rankCalculator');
+const { resolveWeek, dayTaskFor, resolveToday, blocksForDay } = require('../services/dayPlan');
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_WINDOW_DAYS = 60;
@@ -44,8 +47,41 @@ function validateDateParam(req, res) {
 async function getLog(req, res, next) {
   try {
     if (!validateDateParam(req, res)) return undefined;
-    const log = await DailyLog.findOne({ userId: req.userId, date: req.params.date }).lean();
-    return res.json(log || null);
+    const { date } = req.params;
+    const log = await DailyLog.findOne({ userId: req.userId, date }).lean();
+    if (!log) return res.json(null);
+
+    // Resolve which roadmap week/day this date falls on using the SAME pure
+    // day-plan logic as /roadmap/today (Phase 14) — it works for any date, so a
+    // past day's blocks show the real task labels she saw that day, not just
+    // the completion booleans.
+    const user = await User.findById(req.userId).select('startDate').lean();
+    if (!user) {
+      return res.status(404).json({ error: 'user not found' });
+    }
+    const phases = await Roadmap.find({}).sort({ phaseNumber: 1 }).lean();
+    if (phases.length === 0) {
+      return res.status(404).json({ error: 'roadmap has not been seeded' });
+    }
+
+    const today = resolveToday(date);
+    const { week } = resolveWeek(phases, user.startDate, today);
+    const dayOfWeek = today.getDay();
+    const { task } = dayTaskFor(week, dayOfWeek);
+    const dayBlocks = blocksForDay({ dayOfWeek, task, topic: week.topic, dsaFocus: week.dsaFocus });
+
+    return res.json({
+      date,
+      dayType: dayOfWeek === 0 ? 'sunday' : dayOfWeek === 6 ? 'saturday' : 'weekday',
+      blocks: dayBlocks.map((b, i) => ({
+        index: i + 1,
+        label: b.label || 'Focus',
+        time: b.time,
+        completed: Boolean(log.sessionsCompleted[i]),
+      })),
+      note: log.note || '',
+      dsaProblems: (log.dsaProblems || []).map(({ title, difficulty, link }) => ({ title, difficulty, link })),
+    });
   } catch (err) {
     return next(err);
   }
