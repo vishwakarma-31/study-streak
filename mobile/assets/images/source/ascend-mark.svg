@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!--
+    Master Ascend "A" mark — solid filled polygons, single source for every
+    derived icon asset. Two legs converge to a shared apex point (no gap at the
+    top), flat feet (no rounded stroke caps). Gradient climbs iron-grey (#8E8E93,
+    the Iron tier colour) at the base up to radiant white/cyan at the apex,
+    reusing the Phase 11 rank-tier palette. Transparent background — each derived
+    asset bakes its own surface (paper #F5F4F0, or transparent for adaptive/splash).
+  -->
+  <defs>
+    <linearGradient id="ascend" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#8E8E93" />
+      <stop offset="0.3" stop-color="#A9B8BE" />
+      <stop offset="0.65" stop-color="#D9E7EA" />
+      <stop offset="1" stop-color="#F4FBFC" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left leg (apex → outer foot → inner foot) -->
+  <polygon fill="url(#ascend)" points="512,210 252,820 372,820" />
+  <!-- Right leg (apex → inner foot → outer foot) -->
+  <polygon fill="url(#ascend)" points="512,210 772,820 652,820" />
+  <!-- Crossbar (parallelogram tilted to the leg slope, spans between inner edges) -->
+  <polygon fill="url(#ascend)" points="436,540 588,540 606,620 418,620" />
+</svg>
