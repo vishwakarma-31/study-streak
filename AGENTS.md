@@ -65,7 +65,7 @@ study-streak-app/
 
 1. **Start of every session:** read `AGENTS.md` (this file), then `progress.md` to see what phase is active and what's already done, then `decisions.md` to see prior decisions and avoid re-litigating them.
 2. **Before touching a specific domain** (streak logic, notifications, offline sync, API design, mobile UI), read the matching file in `skills/` first. These encode hard-won constraints that aren't obvious from the spec alone.
-3. **End of every session:** update `progress.md` — check off completed subtasks, add notes on anything half-done or blocked. If a meaningful technical choice was made (a library picked, a schema changed, an approach abandoned), log it in `decisions.md` with a one-line rationale.
+3. **After every meaningful change** (not just at session end): update `progress.md` — check off the specific subtask just completed. If a technical choice was made, log it in `decisions.md` immediately, not batched for later. Batching decision-logging to end-of-session is how the Ascend-rename gap happened — do not repeat it.
 4. **Phase 9 (device testing) and Phase 10 (build & deploy) require explicit human confirmation before proceeding.** Do not run `eas build` or deploy the backend without the human explicitly saying to proceed. This matches the same safeguard used on the Dark Pattern Detector project.
 
 ---

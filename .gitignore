@@ -8,7 +8,13 @@ dist/
 *.apk
 
 # agent tooling / session data
-.opencode/
+.opencode/*
+!.opencode/skills/
+!.opencode/skills/**
 .claude/
 .mobile/
 .env*.local
+
+# python cache inside tracked skills scripts
+__pycache__/
+*.pyc
