@@ -1,10 +1,10 @@
 const DailyLog = require('../models/DailyLog');
 const StreakState = require('../models/StreakState');
-const RankState = require('../models/RankState');
+const CustomTask = require('../models/CustomTask');
 const User = require('../models/User');
 const Roadmap = require('../models/Roadmap');
 const { countCompleted, isDayCompleted, computeStreakFromLogs } = require('../services/streakCalculator');
-const { applyDayCompletion } = require('../services/rankCalculator');
+const { buildStreakResponse } = require('./streakController');
 const { resolveWeek, dayTaskFor, resolveToday, blocksForDay } = require('../services/dayPlan');
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -70,6 +70,11 @@ async function getLog(req, res, next) {
     const { task } = dayTaskFor(week, dayOfWeek);
     const dayBlocks = blocksForDay({ dayOfWeek, task, topic: week.topic, dsaFocus: week.dsaFocus });
 
+    const customTasks = await CustomTask.find({ userId: req.userId, date })
+      .select('title completed -_id')
+      .sort({ createdAt: 1 })
+      .lean();
+
     return res.json({
       date,
       dayType: dayOfWeek === 0 ? 'sunday' : dayOfWeek === 6 ? 'saturday' : 'weekday',
@@ -81,6 +86,7 @@ async function getLog(req, res, next) {
       })),
       note: log.note || '',
       dsaProblems: (log.dsaProblems || []).map(({ title, difficulty, link }) => ({ title, difficulty, link })),
+      customTasks: customTasks.map((t) => ({ title: t.title, completed: t.completed })),
     });
   } catch (err) {
     return next(err);
@@ -111,7 +117,19 @@ async function getHistory(req, res, next) {
       .sort({ date: -1 })
       .lean();
 
-    return res.json(logs);
+    const tasks = await CustomTask.find({ userId: req.userId, date: { $gte: start, $lte: end } })
+      .select('date title completed -_id')
+      .sort({ createdAt: 1 })
+      .lean();
+    const tasksByDate = new Map();
+    for (const task of tasks) {
+      if (!tasksByDate.has(task.date)) tasksByDate.set(task.date, []);
+      tasksByDate.get(task.date).push({ title: task.title, completed: task.completed });
+    }
+
+    return res.json(
+      logs.map((log) => ({ ...log, customTasks: tasksByDate.get(log.date) || [] }))
+    );
   } catch (err) {
     return next(err);
   }
@@ -133,15 +151,16 @@ async function upsertLog(req, res, next) {
     const userId = req.userId;
     const date = req.params.date;
 
-    const existingLog = await DailyLog.findOne({ userId, date }).lean();
-    const wasCompleted = Boolean(existingLog && existingLog.dayCompleted);
-
     // The client's latest state is authoritative: it sends the full 4-block array
     // on every sync (single-device, latest-state-wins serialization), so a false
     // must be able to clear a stored true (unmarking a mistaken check-in).
     const sessionsCompleted = incoming;
     const sessionsCompletedCount = countCompleted(sessionsCompleted);
-    const dayCompleted = isDayCompleted(sessionsCompleted);
+    const tasks = await CustomTask.find({ userId, date }).select('completed').lean();
+    const dayCompleted = isDayCompleted(
+      sessionsCompleted,
+      tasks.map((t) => ({ completed: t.completed }))
+    );
 
     const log = await DailyLog.findOneAndUpdate(
       { userId, date },
@@ -156,19 +175,16 @@ async function upsertLog(req, res, next) {
       { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 
+    // Keep the StreakState doc alive with the legacy cached fields (it doubles
+    // as the existence gate for GET /streak); the authoritative provisional
+    // streak is derived on every read by buildStreakResponse. RP is no longer
+    // awarded at write time — it is finalized by the midnight cron.
     const logs = await DailyLog.find({ userId }).select('date dayCompleted').sort({ date: 1 }).lean();
     const streakState = computeStreakFromLogs(logs);
     await StreakState.updateOne({ userId }, { $set: streakState }, { upsert: true });
 
-    // Rank is cumulative and never decreases: award RP only when a day newly
-    // becomes completed (false → true). Re-syncs and unmarking a day change nothing.
-    if (dayCompleted && !wasCompleted) {
-      const rank = await RankState.findOne({ userId }).lean();
-      const { rankState } = applyDayCompletion(rank || {}, { dayCompleted: true });
-      await RankState.updateOne({ userId }, { $set: rankState }, { upsert: true });
-    }
-
-    return res.json({ log, streak: streakState });
+    const streak = await buildStreakResponse(userId, date);
+    return res.json({ log, streak });
   } catch (err) {
     return next(err);
   }

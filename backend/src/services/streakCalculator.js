@@ -4,8 +4,15 @@ function countCompleted(sessionsCompleted = []) {
   return sessionsCompleted.filter(Boolean).length;
 }
 
-function isDayCompleted(sessionsCompleted = []) {
-  return countCompleted(sessionsCompleted) >= COUNT_THRESHOLD;
+// A day counts as completed when at least 3 of the 4 fixed blocks are done AND
+// any custom tasks the user added for that day are all completed. The custom
+// task condition applies the "at least 3 of 4 blocks" threshold on top of the
+// user-chosen tasks: adding a task leaves the day un-completed until that task
+// is done, even if all 4 blocks are checked (visible, intentional behavior).
+function isDayCompleted(sessionsCompleted = [], customTasks = []) {
+  const blocksCompleted = countCompleted(sessionsCompleted) >= COUNT_THRESHOLD;
+  const tasksCompleted = customTasks.length === 0 || customTasks.every((task) => task.completed);
+  return blocksCompleted && tasksCompleted;
 }
 
 function previousDate(dateStr) {

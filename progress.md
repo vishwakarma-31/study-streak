@@ -2,7 +2,7 @@
 
 Update this file at the end of every session. Check off subtasks as completed. Add a short note under a phase if something is blocked, half-done, or deviated from plan.
 
-**Current active phase:** 17
+**Current active phase:** 20 (Phase 19 implementation landed 2026-08-15 — on-device verification + Render redeploy still pending the human gate)
 
 ---
 
@@ -260,3 +260,57 @@ Notes:
 - **Fix en route:** run #2 failed — `app.json` had `slug: "ascend"` (renamed in the Phase 18 pass) but the EAS project linked by `extra.eas.projectId` is registered under slug `mobile`, so eas-cli rejected the mismatch. Reverted `slug` to `mobile` (commit `301d1e3`). The on-phone name `expo.name` stays "Ascend" — slug is only the EAS/web identifier. Never rename the slug while keeping the old projectId, or the next build fails the same way (creating a fresh `ascend` project would also mint a new keystore and break install-over).
 - **Result:** run #3 SUCCESS — APK downloaded to `dist/app-release.apk` (107 MB universal, v2/v3-signed with the project keystore `Build Credentials 0kxKWq7L2D`, same key as 1.2.0/1.3.0 so it installs over the installed APK). `dist/` + `*.apk` added to `.gitignore` (commit `10edeb7`).
 - **Pending on-device (needs human, Phase 9/10 gates):** install the APK, then confirm the Phase 18 paper/ledger identity + Phase 16/17 changes (warm-up, battery hint, history detail), notifications delivery, and airplane-mode offline check. The backend still carries the unmerged `GET /logs/:date` contract from Phase 17 — Render hasn't been redeployed.
+
+## Phase 18a — Ascend Branding Reconciliation
+- [x] "A" mark rebuilt as filled polygons (was: tapered-stroke draft)
+- [x] All derived assets regenerated from one source SVG
+- [x] Legibility verified at 48px / 96px / splash 76px width
+- [x] Backfilled decisions.md entry for the original app.json rename
+- Notes: app.json name/scheme were already "Ascend" going into this phase — this phase finishes the unfinished icon and documents the already-shipped rename. See loop goal doc 00.
+- **Master mark:** `mobile/assets/images/source/ascend-mark.svg` — three filled polygons (left leg `510,208 252,820 372,820`, right leg `514,208 772,820 652,820`, crossbar `428,540 590,540 612,620 412,620`), shared apex (4px overlap kills the anti-aliasing hairline), flat feet, crossbar overlaps leg inner edges ~6px to hide seams. One `userSpaceOnUse` gradient (vertical, feet→apex) shared by all three polygons so the overlaps are invisible.
+- **Gradient stops (exact):** `0% #8E8E93` → `30% #A9B8BE` → `65% #D9E7EA` → `100% #F4FBFC` — Iron-grey at the feet rising to radiant white/cyan at the apex, mirroring the tier climb (see decisions.md).
+- **Pipeline:** `mobile/scripts/render-icons.js` regenerates every derived asset from the one master SVG via `@resvg/resvg-js` (pure-Rust SVG→PNG, no native canvas dep) — `logo.png`/`icon.png` 1024² paper-baked, `icon-adaptive-foreground.png` 1024² transparent, `splash-icon.png` 228² transparent (3× of `imageWidth: 76`), `favicon.png` 48² transparent. `npm i -D @resvg/resvg-js`.
+- **Verified:** `scripts/verify-icons.js` renders at 48/76/96px and asserts ink bbox ≈ x 0.25–0.74 / y 0.20–0.80 (centered, inside adaptive safe zone), both counter holes empty, legs + crossbar + feet present, gradient light→dark top→bottom. ASCII renders confirm a clean "A" silhouette at 48px and 96px. PNGs verified valid (IHDR sig, correct dimensions; logo/icon paper-baked — corner pixel #F5F4F0; adaptive/splash/favicon transparent).
+- **Dependency sync (needed for the expo-doctor DoD):** `npx expo install` bumped 9 SDK-57 packages to their expected patch versions (expo, expo-notifications, expo-router, expo-splash-screen, expo-constants, expo-image, expo-linking, @expo/ui, jest-expo). jest-expo had to be deduped back into devDependencies after `expo install --save-dev` mis-targeted it into `dependencies`. `expo-doctor` 21/21, `expo lint` clean, `tsc --noEmit` clean, jest 17/17 after the bumps.
+- **Remaining (human gate):** install a fresh build on-device and confirm the launcher icon + splash look right at real sizes — this phase only proves geometry/legibility programmatically.
+
+## Phase 18 — Alarm Notifications
+- [x] notifee wired (guarded for Expo Go, mirrors the expo-notifications lazy-load pattern)
+- [x] Per-reminder notification-vs-alarm mode, configurable in Settings
+- [x] Alarm UX: full-screen, looping sound, Stop/Snooze actions, duration 3/5/10 min
+- [x] Settings UI for per-reminder alarm duration
+- [x] Battery-optimization caveat communicated in-app near alarm settings
+- [ ] On-device alarm verified (requires dev-client build, not Expo Go) — human confirmation required
+- Notes:
+  - **notifee lazy-load fixed properly this session.** Root cause of the TS/runtime errors: `@notifee/react-native` puts every method on the **default export** (`ModuleWithStatics`, an instance of the API module), while the enums (`AndroidImportance`, `AndroidCategory`, `AndroidNotificationSetting`, `EventType`, `AlarmType`, `RepeatFrequency`, `TriggerType`) are **separate named exports** re-exported by `__exportStar`. The old `typeof import('@notifee/react-native')` type exposed neither correctly, and the old `getNotifee()` returned the raw `require()` result — so `NF.createTriggerNotification` etc. would have been `undefined` at runtime. `NotifeeModule` is now typed as the default-export type intersected with the enum statics, and `getNotifee()` merges them at runtime (`ns.default ?? ns` + `Object.assign` of the enum statics onto the same handle). Action handlers now use notifee's real `Event` type instead of a hand-rolled shape.
+  - **Per-reminder mode list in Settings:** each `REMINDER_META` entry renders as a card — label + schedule, a Notification/Alarm mode-pill selector (`ModePill`), an enabled `Switch`, plus contextual notes: "Alarm mode needs the installed build (not available in Expo Go)" when alarm is unsupported, or a destructive "Exact-alarm permission is off — open system settings" link (via `openAlarmPermissionSettings()`) when the Android exact-alarm permission is missing. Replaced the old static `REMINDER_SCHEDULE_LINES` summary list.
+  - **`updateReminderSetting` changed to persist-only** (was: persist + auto-`scheduleReminders()`). Auto-rescheduling there would re-enable reminders even when the master toggle in Settings is OFF — the per-reminder handlers in Settings now call `scheduleReminders()` themselves, only when the master is ON.
+  - New exported `isAlarmSupported()` (`Platform.OS === 'android' && getNotifee() !== null`) so the UI can tell "alarm possible but permission missing" apart from "notifee not present at all".
+  - Removed the leftover unused `import type * as NotificationsType from 'expo-notifications'` (dead after an earlier refactor).
+  - **Alarm UX implemented (session 2026-08-15).** Defaults flipped: every reminder now defaults to mode `notification` (alarm is opt-in per reminder), and each setting gained `alarmDurationMinutes: 3|5|10` (default 5). `scheduleAlarmTrigger` schedules a **pair**: (1) the full-screen looping alarm (`SET_ALARM_CLOCK`, `timeoutAfter: durationMs` auto-cancels the ringing at the end of the window) and (2) a companion trigger at `timestamp + durationMs` on the reminders channel (importance DEFAULT) — so a timed-out/ignored alarm still leaves a persistent notification in the shade. Snooze (5 min) cancels both and reschedules a fresh one-off pair (`snooze-<id>-<ts>`); Dismiss cancels both. Repeating alarms keep the deterministic `alarm-<id>-<slot>` id so notifee dedupes on reschedule; the fallback id is derived (`fallback-<alarmId>`) and carried in `data.fallbackId` so the action handler can cancel it.
+  - **No Expo config plugin:** notifee v9 removed its config plugin (verified in `node_modules` — no `app.plugin.js`), so the required native permissions were added to `app.json` → `android.permissions`: `SCHEDULE_EXACT_ALARM`, `USE_FULL_SCREEN_INTENT`, `WAKE_LOCK` (confirmed in `expo config --type public`). Notifee's own `build.gradle` wires its local maven repo (`android/libs`) itself, so no `extraMavenRepos` needed. `USE_FULL_SCREEN_INTENT` is not added by default on Android 14+ — the user must grant it in system settings; the existing exact-alarm permission link covers this flow.
+  - **Settings UI:** when a reminder's mode is Alarm, a "Ring for 3/5/10 min" pill row renders under the mode pills and reschedules only via the established cancel-and-reschedule pattern (master-toggle-aware). An honest caveat renders below the reminder list whenever any reminder is in alarm mode: alarm uses the same OS pathway as the built-in alarm clock (more reliable than a plain notification), but OEM battery-saving can still interfere — the battery-optimization prompt stays relevant.
+  - Verified: `tsc --noEmit` clean, `expo lint` clean, jest 17/17, `expo config` shows the three permissions. **On-device alarm ring is still a human gate** (needs a dev-client/APK build, not Expo Go).
+
+## Phase 19 — Custom Task-of-the-Day + Provisional Streak (IMPLEMENTED 2026-08-15)
+- [x] Separate `customTasks` collection + CRUD routes (create is today-only → 400 otherwise)
+- [x] Day completion = 3-of-4 blocks AND all custom tasks done (`isDayCompleted`, shared `recomputeDay`)
+- [x] Provisional streak derived on read — `confirmedStreak` + `todayProvisional` + `currentStreak`, `?date=` support (StreakState kept only as the 404 gate)
+- [x] RP finalization moved to midnight cron — `cron/dailyFinalization.js` replaces `cron/streakReset.js`
+- [x] Unit test covering the up-down-up sequence within a single day
+- [x] Mobile: add-task composer + provisional-streak messaging on the Today screen
+- [x] Mobile offline custom-task queue (`services/logs.ts`) + jest coverage
+- [x] History detail + history rows show custom tasks
+- Notes:
+  - **Backend:** new `models/CustomTask.js` (`{ userId, date, title, completed, createdAt }`, index `{ userId, date }`, title cap 120) + `routes/customTasks.js` + `controllers/customTasksController.js` (`GET /custom-tasks/:date`, `POST /custom-tasks` today-only, `PATCH /custom-tasks/:id`, `DELETE /custom-tasks/:id`). Every task mutation AND every `POST /logs/:date` recomputes the day via `recomputeDay` (`isDayCompleted` = ≥3 blocks AND all tasks done). `GET /logs/:date` + `GET /logs/history` now include `customTasks` as summaries `{ title, completed }`. This replaces the old progress.md plan (`DailyLog.customTask` + `PATCH /logs/:date/custom-task`) — see decisions.md.
+  - **Provisional streak:** `streakCalculator.js` exposes `confirmedStreakFor` (streak as of yesterday) + `isDayCompleted`; `streakController.js` builds one shared response `{ currentStreak, confirmedStreak, todayProvisional, longestStreak, lastCompletedDate, totalDaysCompleted, history }` used by `GET /streak` (`?date=` supported, Phase 14 convention) and the `POST /logs/:date` response. StreakState survives only as the 404 gate.
+  - **Midnight cron:** `cron/streakReset.js` deleted; `cron/dailyFinalization.js` (`runMidnightFinalization(nowDate?)`) snapshots `confirmedStreak` + `lastFinalizedDate` and awards +20 per finalized completed day in `(lastFinalizedDate, yesterday]`; a null-boundary first run sets the boundary WITHOUT awarding (legacy days already earned RP write-time — never double-award). `applyDayCompletion` removed from `upsertLog`.
+  - **Mobile:** `services/api.ts` — `fetchCustomTasks`/`createCustomTask`/`updateCustomTask`/`deleteCustomTask`, `fetchStreak(date?)`, StreakData `confirmedStreak`/`todayProvisional`, `HistoryDetail.customTasks`. `services/logs.ts` — offline queue mirroring the block queue per date (cache `local_custom_tasks:<date>`, pending marker `pending_custom:<date>`, temp `local-` ids; `flushPendingCustomTasks` reconciles create→patch→delete, adopts real ids, clears pending only if the list is unchanged mid-flush). Today screen: dashed "Your tasks today" card (composer, toggle, remove, "Pending sync" badge) + a factual local note ("All 4 blocks done — 1 task left before today counts") — no guilt copy. History rows show custom-task counts; history-detail renders the task list with strike-through.
+  - **Tests:** backend **137/137** (was 118; up-down-up, custom-tasks CRUD incl. today-only 400, provisional streak + `?date=`, RP-at-cron incl. migration first run + never-decrease); mobile jest **25/25** (was 17; 8 new custom-task queue tests), `tsc --noEmit` clean, `expo lint` clean.
+  - **Pending (human gate):** on-device QA (add/toggle/delete tasks offline → airplane-mode → reconnect, confirm no duplicates) and a **Render redeploy** to serve the new endpoints — the deployed backend has none of them yet. No EAS build ran this session. See loop goal doc 01; design deviations from the original plan are logged in decisions.md.
+
+## Phase 20 — Standalone To-Do List
+- [ ] Todo model + 5 endpoints (list/create/update/delete/reorder)
+- [ ] Todos screen, offline-first via services/todos.ts
+- [ ] skills/todo-list-feature.md written
+- Notes: new feature, decoupled from streak/rank by design (see decisions.md). See loop goal doc 02.

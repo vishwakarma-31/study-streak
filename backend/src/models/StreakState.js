@@ -7,6 +7,8 @@ const streakStateSchema = new mongoose.Schema(
     longestStreak: { type: Number, default: 0 },
     lastCompletedDate: { type: String, default: null },
     totalDaysCompleted: { type: Number, default: 0 },
+    confirmedStreak: { type: Number, default: 0 },
+    lastFinalizedDate: { type: String, default: null },
   },
   { timestamps: true }
 );

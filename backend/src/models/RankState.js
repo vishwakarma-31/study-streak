@@ -7,6 +7,7 @@ const rankStateSchema = new mongoose.Schema(
     currentTier: { type: String, default: 'Iron' },
     currentSubTier: { type: String, default: null },
     rpIntoCurrentSubTier: { type: Number, default: 0 },
+    lastFinalizedDate: { type: String, default: null },
   },
   { timestamps: true }
 );

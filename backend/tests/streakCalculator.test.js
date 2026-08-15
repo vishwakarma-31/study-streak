@@ -36,6 +36,34 @@ describe('isDayCompleted (3-of-4 threshold)', () => {
   });
 });
 
+describe('isDayCompleted with custom tasks', () => {
+  test('no custom tasks keeps the plain 3-of-4 rule', () => {
+    expect(isDayCompleted([true, true, true, false], [])).toBe(true);
+    expect(isDayCompleted([true, true, false, false], [])).toBe(false);
+  });
+
+  test('an incomplete custom task blocks a day even with all 4 blocks done', () => {
+    const tasks = [{ completed: false }];
+    expect(isDayCompleted([true, true, true, true], tasks)).toBe(false);
+  });
+
+  test('all custom tasks completed keeps the day completed', () => {
+    const tasks = [{ completed: true }, { completed: true }];
+    expect(isDayCompleted([true, true, true, false], tasks)).toBe(true);
+  });
+
+  test('up-down-up within a single day: 3/4 blocks, add task, complete task', () => {
+    const sessions = [true, true, true, true];
+    expect(isDayCompleted(sessions)).toBe(true);
+    expect(isDayCompleted(sessions, [{ completed: false }])).toBe(false);
+    expect(isDayCompleted(sessions, [{ completed: true }])).toBe(true);
+  });
+
+  test('adding a task never unlocks a sub-threshold day', () => {
+    expect(isDayCompleted([true, true, false, false], [{ completed: true }])).toBe(false);
+  });
+});
+
 describe('previousDate', () => {
   test('plain day arithmetic', () => {
     expect(previousDate('2026-08-09')).toBe('2026-08-08');

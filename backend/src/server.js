@@ -1,6 +1,6 @@
 const app = require('./app');
 const connectDB = require('./config/db');
-const { startMidnightCron } = require('./cron/streakReset');
+const { startMidnightCron } = require('./cron/dailyFinalization');
 
 const PORT = process.env.PORT || 5000;
 

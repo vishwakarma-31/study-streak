@@ -70,6 +70,8 @@ export type StreakHistoryEntry = {
 
 export type StreakData = {
   currentStreak: number;
+  confirmedStreak: number;
+  todayProvisional: boolean;
   longestStreak: number;
   lastCompletedDate: string | null;
   totalDaysCompleted: number;
@@ -87,12 +89,18 @@ export type DsaProblem = {
   link?: string;
 };
 
+export type CustomTaskSummary = {
+  title: string;
+  completed: boolean;
+};
+
 export type DailyLogEntry = {
   date: string;
   sessionsCompletedCount: number;
   dayCompleted: boolean;
   note: string;
   dsaProblems: DsaProblem[];
+  customTasks: CustomTaskSummary[];
 };
 
 export async function fetchHistory(from?: string, to?: string): Promise<DailyLogEntry[]> {
@@ -113,11 +121,38 @@ export type HistoryDetail = {
   blocks: HistoryDetailBlock[];
   note: string;
   dsaProblems: DsaProblem[];
+  customTasks: CustomTaskSummary[];
 };
 
 export async function fetchLog(date: string): Promise<HistoryDetail> {
   const { data } = await api.get<HistoryDetail>(`/logs/${date}`);
   return data;
+}
+
+export type CustomTask = {
+  id: string;
+  title: string;
+  completed: boolean;
+  date: string;
+};
+
+export async function fetchCustomTasks(date: string): Promise<CustomTask[]> {
+  const { data } = await api.get<CustomTask[]>(`/custom-tasks/${date}`);
+  return data;
+}
+
+export async function createCustomTask(date: string, title: string): Promise<CustomTask> {
+  const { data } = await api.post<CustomTask>('/custom-tasks', { date, title });
+  return data;
+}
+
+export async function updateCustomTask(id: string, completed: boolean): Promise<CustomTask> {
+  const { data } = await api.patch<CustomTask>(`/custom-tasks/${id}`, { completed });
+  return data;
+}
+
+export async function deleteCustomTask(id: string): Promise<void> {
+  await api.delete(`/custom-tasks/${id}`);
 }
 
 export type BadgeMilestone =
@@ -180,8 +215,8 @@ export async function fetchToday(date?: string): Promise<TodayData> {
   return data;
 }
 
-export async function fetchStreak(): Promise<StreakData> {
-  const { data } = await api.get<StreakData>('/streak');
+export async function fetchStreak(date?: string): Promise<StreakData> {
+  const { data } = await api.get<StreakData>('/streak', { params: { date } });
   return data;
 }
 

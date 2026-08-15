@@ -111,6 +111,33 @@ export default function HistoryDetailScreen() {
               ))}
             </View>
 
+            {detail.customTasks.length > 0 ? (
+              <View style={styles.tasksSection}>
+                <ThemedText type="label" themeColor="textSecondary">
+                  Custom tasks
+                </ThemedText>
+                <View style={styles.taskList}>
+                  {detail.customTasks.map((task, index) => (
+                    <View
+                      key={`${task.title}-${index}`}
+                      style={[styles.taskRow, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+                      <View
+                        style={[
+                          styles.taskCheck,
+                          { borderColor: task.completed ? theme.success : theme.textSecondary },
+                          task.completed && { backgroundColor: theme.success },
+                        ]}>
+                        {task.completed ? <Ionicons name="checkmark" size={12} color="#ffffff" /> : null}
+                      </View>
+                      <ThemedText type="default" style={task.completed ? styles.taskTitleDone : undefined}>
+                        {task.title}
+                      </ThemedText>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : null}
+
             {detail.note ? (
               <View
                 style={[
@@ -199,6 +226,33 @@ const styles = StyleSheet.create({
   },
   dsaSection: {
     gap: Spacing.one,
+  },
+  tasksSection: {
+    gap: Spacing.one,
+  },
+  taskList: {
+    gap: Spacing.two,
+  },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    borderWidth: 1,
+    borderRadius: Spacing.two,
+    padding: Spacing.two,
+  },
+  taskCheck: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  taskTitleDone: {
+    textDecorationLine: 'line-through',
+    opacity: 0.6,
   },
   chipsRow: {
     flexDirection: 'row',

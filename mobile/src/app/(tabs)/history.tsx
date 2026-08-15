@@ -43,6 +43,11 @@ function HistoryRow({ entry, onPress }: { entry: DailyLogEntry; onPress: () => v
             {entry.sessionsCompletedCount} of 4 blocks
           </ThemedText>
         )}
+        {entry.customTasks.length > 0 ? (
+          <ThemedText type="small" themeColor="textSecondary">
+            · {entry.customTasks.length} custom task{entry.customTasks.length === 1 ? '' : 's'}
+          </ThemedText>
+        ) : null}
       </View>
       {entry.note ? (
         <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>

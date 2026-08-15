@@ -12,6 +12,8 @@ const DailyLog = require('../src/models/DailyLog');
 const StreakState = require('../src/models/StreakState');
 const Badge = require('../src/models/Badge');
 const RankState = require('../src/models/RankState');
+const CustomTask = require('../src/models/CustomTask');
+const { runMidnightFinalization } = require('../src/cron/dailyFinalization');
 
 let mongoServer;
 
@@ -71,6 +73,11 @@ function daysAgo(n) {
   return d;
 }
 
+function localDateString(nDaysAgo) {
+  const d = daysAgo(nDaysAgo);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 async function registerAndLogin() {
   await request(app).post('/auth/register').send({
     name: 'Test User',
@@ -105,6 +112,7 @@ beforeEach(async () => {
     StreakState.deleteMany({}),
     Badge.deleteMany({}),
     RankState.deleteMany({}),
+    CustomTask.deleteMany({}),
   ]);
   await registerAndLogin();
   await Roadmap.create(seedPhases);
@@ -339,11 +347,6 @@ describe('GET /logs/:date', () => {
 });
 
 describe('GET /logs/history', () => {
-  function localDateString(nDaysAgo) {
-    const d = daysAgo(nDaysAgo);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }
-
   test('returns logs newest-first within the default window', async () => {
     await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
       sessionsCompleted: [true, true, true, false],
@@ -366,6 +369,7 @@ describe('GET /logs/history', () => {
     const res = await authed(request(app).get('/logs/history'));
     expect(res.status).toBe(200);
     expect(Object.keys(res.body[0]).sort()).toEqual([
+      'customTasks',
       'date',
       'dayCompleted',
       'dsaProblems',
@@ -375,6 +379,7 @@ describe('GET /logs/history', () => {
     expect(res.body[0]).toEqual({
       date: localDateString(0),
       dayCompleted: true,
+      customTasks: [],
       dsaProblems: [],
       note: '',
       sessionsCompletedCount: 3,
@@ -518,10 +523,12 @@ describe('POST /logs/:date', () => {
     expect(res.body.streak.currentStreak).toBe(2);
   });
 
-  test('awards +20 RP the first time a day is completed', async () => {
+  test('awards +20 RP when a finalized day is completed', async () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, false],
     });
+    await RankState.create({ userId, lastFinalizedDate: '2026-08-08' });
+    await runMidnightFinalization('2026-08-15');
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(20);
     expect(res.body.currentTier).toBe('Iron');
@@ -530,41 +537,61 @@ describe('POST /logs/:date', () => {
     expect(res.body.rpNeededForNextSubTier).toBe(80);
   });
 
-  test('does not double-award RP on same-day re-sync', async () => {
+  test('does not double-award RP on same-day re-sync or across runs', async () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, false],
     });
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, true],
     });
+    await RankState.create({ userId, lastFinalizedDate: '2026-08-08' });
+    await runMidnightFinalization('2026-08-15');
+    await runMidnightFinalization('2026-08-15');
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(20);
   });
 
-  test('unmarking a day does not drop RP (rank never decreases)', async () => {
+  test('unmarking a day does not drop already-finalized RP (rank never decreases)', async () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, false],
     });
+    await RankState.create({ userId, lastFinalizedDate: '2026-08-08' });
+    await runMidnightFinalization('2026-08-15');
+
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, false, false],
     });
+    await runMidnightFinalization('2026-08-15');
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(20);
     expect(res.body.streak).toBeUndefined();
   });
 
-  test('15 completed days crosses into Bronze I', async () => {
+  test('15 finalized completed days crosses into Bronze I', async () => {
     for (let d = 1; d <= 15; d += 1) {
       const date = `2026-08-${String(d).padStart(2, '0')}`;
       await authed(request(app).post(`/logs/${date}`)).send({
         sessionsCompleted: [true, true, true, false],
       });
     }
+    await RankState.create({ userId, lastFinalizedDate: '2026-07-31' });
+    await runMidnightFinalization('2026-08-16');
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(300);
     expect(res.body.currentTier).toBe('Bronze');
     expect(res.body.currentSubTier).toBe('I');
     expect(res.body.rpIntoCurrentSubTier).toBe(0);
+  });
+
+  test('first finalization run after migration sets the boundary without awarding', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    expect((await authed(request(app).get('/rank'))).body.totalRP).toBe(0);
+    await runMidnightFinalization('2026-08-15');
+    expect((await authed(request(app).get('/rank'))).body.totalRP).toBe(0);
+    const rank = await RankState.findOne({ userId }).lean();
+    expect(rank.lastFinalizedDate).toBe('2026-08-14');
   });
 
   test('rejects invalid sessionsCompleted payloads', async () => {
@@ -605,6 +632,158 @@ describe('GET /streak', () => {
 
   test('requires auth', async () => {
     const res = await request(app).get('/streak');
+    expect(res.status).toBe(401);
+  });
+
+  test('reports today as provisional on top of the confirmed streak', async () => {
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get('/streak'));
+    expect(res.status).toBe(200);
+    expect(res.body.confirmedStreak).toBe(1);
+    expect(res.body.todayProvisional).toBe(true);
+    expect(res.body.currentStreak).toBe(2);
+  });
+
+  test('an incomplete today stays provisional-false and adds no day', async () => {
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get('/streak'));
+    expect(res.body.confirmedStreak).toBe(1);
+    expect(res.body.todayProvisional).toBe(false);
+    expect(res.body.currentStreak).toBe(1);
+  });
+
+  test('accepts a date param to view the streak as of another local date', async () => {
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get(`/streak?date=${localDateString(1)}`));
+    expect(res.status).toBe(200);
+    expect(res.body.confirmedStreak).toBe(0);
+    expect(res.body.todayProvisional).toBe(true);
+    expect(res.body.currentStreak).toBe(1);
+  });
+
+  test('rejects an invalid date param', async () => {
+    const res = await authed(request(app).get('/streak?date=not-a-date'));
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('custom tasks', () => {
+  test('creates a task for today', async () => {
+    const res = await authed(request(app).post('/custom-tasks')).send({
+      date: localDateString(0),
+      title: 'Revise notes',
+    });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      title: 'Revise notes',
+      completed: false,
+      date: localDateString(0),
+    });
+    expect(res.body.id).toBeTruthy();
+  });
+
+  test('rejects creating a task for a non-today date', async () => {
+    const res = await authed(request(app).post('/custom-tasks')).send({
+      date: '2026-08-01',
+      title: 'Too late',
+    });
+    expect(res.status).toBe(400);
+  });
+
+  test('rejects blank and over-length titles', async () => {
+    const blank = await authed(request(app).post('/custom-tasks')).send({
+      date: localDateString(0),
+      title: '   ',
+    });
+    expect(blank.status).toBe(400);
+    const long = await authed(request(app).post('/custom-tasks')).send({
+      date: localDateString(0),
+      title: 'x'.repeat(121),
+    });
+    expect(long.status).toBe(400);
+  });
+
+  test('lists tasks for a date', async () => {
+    await authed(request(app).post('/custom-tasks')).send({ date: localDateString(0), title: 'A' });
+    await authed(request(app).post('/custom-tasks')).send({ date: localDateString(0), title: 'B' });
+    const res = await authed(request(app).get(`/custom-tasks/${localDateString(0)}`));
+    expect(res.status).toBe(200);
+    expect(res.body.map((t) => t.title)).toEqual(['A', 'B']);
+  });
+
+  test('an open task keeps a fully-completed day un-completed until done', async () => {
+    await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
+      sessionsCompleted: [true, true, true, true],
+    });
+    const before = await authed(request(app).get('/streak'));
+    expect(before.body.todayProvisional).toBe(true);
+
+    const task = await authed(request(app).post('/custom-tasks')).send({
+      date: localDateString(0),
+      title: 'Extra review',
+    });
+    expect(task.status).toBe(201);
+    const afterCreate = await authed(request(app).get('/streak'));
+    expect(afterCreate.body.todayProvisional).toBe(false);
+    expect(afterCreate.body.currentStreak).toBe(0);
+
+    const patch = await authed(request(app).patch(`/custom-tasks/${task.body.id}`)).send({
+      completed: true,
+    });
+    expect(patch.status).toBe(200);
+    expect(patch.body.completed).toBe(true);
+    const afterPatch = await authed(request(app).get('/streak'));
+    expect(afterPatch.body.todayProvisional).toBe(true);
+  });
+
+  test('deleting a task restores the day completion', async () => {
+    await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
+      sessionsCompleted: [true, true, true, true],
+    });
+    const task = await authed(request(app).post('/custom-tasks')).send({
+      date: localDateString(0),
+      title: 'Temp task',
+    });
+    const withTask = await authed(request(app).get('/streak'));
+    expect(withTask.body.todayProvisional).toBe(false);
+
+    const del = await authed(request(app).delete(`/custom-tasks/${task.body.id}`));
+    expect(del.status).toBe(204);
+    const afterDelete = await authed(request(app).get('/streak'));
+    expect(afterDelete.body.todayProvisional).toBe(true);
+  });
+
+  test('returns 404 for missing tasks', async () => {
+    const patch = await authed(request(app).patch('/custom-tasks/000000000000000000000000')).send({
+      completed: true,
+    });
+    expect(patch.status).toBe(404);
+    const del = await authed(request(app).delete('/custom-tasks/000000000000000000000000'));
+    expect(del.status).toBe(404);
+  });
+
+  test('rejects a non-boolean completed on patch', async () => {
+    const task = await authed(request(app).post('/custom-tasks')).send({
+      date: localDateString(0),
+      title: 'X',
+    });
+    const res = await authed(request(app).patch(`/custom-tasks/${task.body.id}`).send({
+      completed: 'yes',
+    }));
+    expect(res.status).toBe(400);
+  });
+
+  test('requires auth', async () => {
+    const res = await request(app).get(`/custom-tasks/${localDateString(0)}`);
     expect(res.status).toBe(401);
   });
 });
