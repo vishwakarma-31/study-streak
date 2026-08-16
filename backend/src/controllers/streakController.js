@@ -1,7 +1,7 @@
 const StreakState = require('../models/StreakState');
 const DailyLog = require('../models/DailyLog');
 const CustomTask = require('../models/CustomTask');
-const { isDayCompleted, previousDate, computeStreakFromLogs } = require('../services/streakCalculator');
+const { isDayCompleted, previousDate, confirmedStreakFor, computeStreakFromLogs } = require('../services/streakCalculator');
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -36,9 +36,11 @@ async function buildStreakResponse(userId, dateStr) {
     .sort({ date: 1 })
     .lean();
 
-  const confirmed = computeStreakFromLogs(
-    logs.filter((l) => l.date <= previousDate(dateStr))
-  );
+  // The confirmed streak is recomputed from the full calendar range through
+  // yesterday (confirmedStreakFor walks every date, so a skipped day with no log
+  // still resets it — the Phase 21 gap-day bug fix). Today is the live
+  // provisional value on top.
+  const confirmed = confirmedStreakFor(logs, previousDate(dateStr));
   const live = computeStreakFromLogs(logs);
 
   const todayLog = logs.find((l) => l.date === dateStr);
@@ -49,8 +51,8 @@ async function buildStreakResponse(userId, dateStr) {
   );
 
   return {
-    currentStreak: confirmed.currentStreak + (todayProvisional ? 1 : 0),
-    confirmedStreak: confirmed.currentStreak,
+    currentStreak: confirmed.confirmedStreak + (todayProvisional ? 1 : 0),
+    confirmedStreak: confirmed.confirmedStreak,
     todayProvisional,
     longestStreak: live.longestStreak,
     lastCompletedDate: live.lastCompletedDate,

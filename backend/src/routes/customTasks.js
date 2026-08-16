@@ -1,5 +1,6 @@
 const express = require('express');
 const auth = require('../middleware/auth');
+const finalizeBeforeRequest = require('../middleware/finalizeBeforeRequest');
 const {
   listCustomTasks,
   createTask,
@@ -10,6 +11,7 @@ const {
 const router = express.Router();
 
 router.use(auth);
+router.use(finalizeBeforeRequest);
 
 router.get('/:date', listCustomTasks);
 router.post('/', createTask);

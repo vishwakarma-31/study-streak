@@ -13,7 +13,7 @@ const StreakState = require('../src/models/StreakState');
 const Badge = require('../src/models/Badge');
 const RankState = require('../src/models/RankState');
 const CustomTask = require('../src/models/CustomTask');
-const { runMidnightFinalization } = require('../src/cron/dailyFinalization');
+const { catchUpFinalization } = require('../src/cron/dailyFinalization');
 
 let mongoServer;
 
@@ -91,6 +91,17 @@ async function registerAndLogin() {
   token = res.body.token;
   const payload = jwt.verify(token, process.env.JWT_SECRET);
   userId = payload.userId;
+}
+
+async function registerUser(email) {
+  await request(app).post('/auth/register').send({
+    name: 'Second User',
+    email,
+    password: 'anothersecret2',
+  });
+  const res = await request(app).post('/auth/login').send({ email, password: 'anothersecret2' });
+  const payload = jwt.verify(res.body.token, process.env.JWT_SECRET);
+  return { token: res.body.token, userId: payload.userId };
 }
 
 beforeAll(async () => {
@@ -479,25 +490,29 @@ describe('POST /logs/:date', () => {
     expect(streakRes.body.history).toEqual([{ date: '2026-08-09', dayCompleted: false }]);
   });
 
-  test('uncompleting the latest consecutive day decrements the streak', async () => {
-    await authed(request(app).post('/logs/2026-08-09')).send({
+  test('uncompleting the latest consecutive day breaks the confirmed streak', async () => {
+    await authed(request(app).post(`/logs/${localDateString(2)}`)).send({
       sessionsCompleted: [true, true, true, false],
     });
-    await authed(request(app).post('/logs/2026-08-10')).send({
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
       sessionsCompleted: [true, true, true, false],
     });
     expect((await authed(request(app).get('/streak'))).body.currentStreak).toBe(2);
 
-    await authed(request(app).post('/logs/2026-08-10')).send({
+    // Strict Phase 21 semantics: the confirmed streak through yesterday resets to
+    // 0 the moment yesterday is uncompleted (a broken run counts as 0, never as a
+    // silent restart at the day-before-yesterday).
+    await authed(request(app).post(`/logs/${localDateString(1)}`)).send({
       sessionsCompleted: [true, true, false, false],
     });
     const res = await authed(request(app).get('/streak'));
-    expect(res.body.currentStreak).toBe(1);
+    expect(res.body.currentStreak).toBe(0);
+    expect(res.body.confirmedStreak).toBe(0);
     expect(res.body.totalDaysCompleted).toBe(1);
-    expect(res.body.lastCompletedDate).toBe('2026-08-09');
+    expect(res.body.lastCompletedDate).toBe(localDateString(2));
     expect(res.body.history).toEqual([
-      { date: '2026-08-09', dayCompleted: true },
-      { date: '2026-08-10', dayCompleted: false },
+      { date: localDateString(2), dayCompleted: true },
+      { date: localDateString(1), dayCompleted: false },
     ]);
   });
 
@@ -527,8 +542,8 @@ describe('POST /logs/:date', () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, false],
     });
-    await RankState.create({ userId, lastFinalizedDate: '2026-08-08' });
-    await runMidnightFinalization('2026-08-15');
+    await RankState.updateOne({ userId }, { $set: { lastFinalizedDate: '2026-08-08' } }, { upsert: true });
+    await catchUpFinalization({ nowDate: '2026-08-15' });
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(20);
     expect(res.body.currentTier).toBe('Iron');
@@ -544,9 +559,9 @@ describe('POST /logs/:date', () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, true],
     });
-    await RankState.create({ userId, lastFinalizedDate: '2026-08-08' });
-    await runMidnightFinalization('2026-08-15');
-    await runMidnightFinalization('2026-08-15');
+    await RankState.updateOne({ userId }, { $set: { lastFinalizedDate: '2026-08-08' } }, { upsert: true });
+    await catchUpFinalization({ nowDate: '2026-08-15' });
+    await catchUpFinalization({ nowDate: '2026-08-15' });
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(20);
   });
@@ -555,13 +570,13 @@ describe('POST /logs/:date', () => {
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, true, false],
     });
-    await RankState.create({ userId, lastFinalizedDate: '2026-08-08' });
-    await runMidnightFinalization('2026-08-15');
+    await RankState.updateOne({ userId }, { $set: { lastFinalizedDate: '2026-08-08' } }, { upsert: true });
+    await catchUpFinalization({ nowDate: '2026-08-15' });
 
     await authed(request(app).post('/logs/2026-08-09')).send({
       sessionsCompleted: [true, true, false, false],
     });
-    await runMidnightFinalization('2026-08-15');
+    await catchUpFinalization({ nowDate: '2026-08-15' });
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(20);
     expect(res.body.streak).toBeUndefined();
@@ -574,8 +589,8 @@ describe('POST /logs/:date', () => {
         sessionsCompleted: [true, true, true, false],
       });
     }
-    await RankState.create({ userId, lastFinalizedDate: '2026-07-31' });
-    await runMidnightFinalization('2026-08-16');
+    await RankState.updateOne({ userId }, { $set: { lastFinalizedDate: '2026-07-31' } }, { upsert: true });
+    await catchUpFinalization({ nowDate: '2026-08-16' });
     const res = await authed(request(app).get('/rank'));
     expect(res.body.totalRP).toBe(300);
     expect(res.body.currentTier).toBe('Bronze');
@@ -588,7 +603,7 @@ describe('POST /logs/:date', () => {
       sessionsCompleted: [true, true, true, false],
     });
     expect((await authed(request(app).get('/rank'))).body.totalRP).toBe(0);
-    await runMidnightFinalization('2026-08-15');
+    await catchUpFinalization({ nowDate: '2026-08-15' });
     expect((await authed(request(app).get('/rank'))).body.totalRP).toBe(0);
     const rank = await RankState.findOne({ userId }).lean();
     expect(rank.lastFinalizedDate).toBe('2026-08-14');
@@ -620,14 +635,16 @@ describe('PATCH /logs/:date/note', () => {
 
 describe('GET /streak', () => {
   test('returns streak state and history', async () => {
-    await authed(request(app).post('/logs/2026-08-09')).send({
+    await authed(request(app).post(`/logs/${localDateString(0)}`)).send({
       sessionsCompleted: [true, true, true, false],
     });
     const res = await authed(request(app).get('/streak'));
     expect(res.status).toBe(200);
     expect(res.body.currentStreak).toBe(1);
+    expect(res.body.confirmedStreak).toBe(0);
+    expect(res.body.todayProvisional).toBe(true);
     expect(res.body.longestStreak).toBe(1);
-    expect(res.body.history).toEqual([{ date: '2026-08-09', dayCompleted: true }]);
+    expect(res.body.history).toEqual([{ date: localDateString(0), dayCompleted: true }]);
   });
 
   test('requires auth', async () => {
@@ -673,6 +690,96 @@ describe('GET /streak', () => {
   test('rejects an invalid date param', async () => {
     const res = await authed(request(app).get('/streak?date=not-a-date'));
     expect(res.status).toBe(400);
+  });
+});
+
+describe('Phase 21: strict streak across gap days (the reported bug)', () => {
+  test('a skipped day with NO log resets the streak (complete, skip, complete => 1, not 2)', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const day3 = await authed(request(app).post('/logs/2026-08-11')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    // Day 2 (2026-08-10) has zero logs. The calendar-aware walk must reset, so
+    // the completed day 3 starts over at 1 — this is the exact reported symptom.
+    expect(day3.body.streak.currentStreak).toBe(1);
+    expect(day3.body.streak.longestStreak).toBe(1);
+
+    const streak = await authed(request(app).get('/streak'));
+    expect(streak.body.confirmedStreak).toBe(0);
+    expect(streak.body.currentStreak).toBe(0);
+  });
+
+  test('a multi-day gap resets the confirmed streak to 0 and snapshots it', async () => {
+    await authed(request(app).post('/logs/2026-08-01')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await authed(request(app).post('/logs/2026-08-08')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    const res = await authed(request(app).get('/streak'));
+    expect(res.status).toBe(200);
+    expect(res.body.confirmedStreak).toBe(0);
+    expect(res.body.currentStreak).toBe(0);
+    expect(res.body.longestStreak).toBe(1);
+
+    const state = await StreakState.findOne({ userId }).lean();
+    expect(state.confirmedStreak).toBe(0);
+    expect(state.lastFinalizedDate).toBe(localDateString(1));
+  });
+
+  test('catchUpFinalization is idempotent (no double RP, no double streak work)', async () => {
+    await authed(request(app).post('/logs/2026-08-09')).send({
+      sessionsCompleted: [true, true, true, false],
+    });
+    await RankState.updateOne({ userId }, { $set: { lastFinalizedDate: '2026-08-08' } }, { upsert: true });
+
+    const first = await catchUpFinalization({ nowDate: '2026-08-15' });
+    const second = await catchUpFinalization({ nowDate: '2026-08-15' });
+    expect(first.finalizedUsers).toBe(1);
+    expect(first.rpAwarded).toBe(1);
+    expect(second.finalizedUsers).toBe(0);
+    expect(second.rpAwarded).toBe(0);
+
+    const rank = await RankState.findOne({ userId }).lean();
+    expect(rank.totalRP).toBe(20);
+    expect(rank.lastFinalizedDate).toBe('2026-08-14');
+    const state = await StreakState.findOne({ userId }).lean();
+    expect(state.confirmedStreak).toBe(0);
+    expect(state.lastFinalizedDate).toBe('2026-08-14');
+  });
+
+  test('lazy catch-up via GET /streak matches the explicit all-users cron run', async () => {
+    const second = await registerUser('second@study.dev');
+    const authedA = (req) => req.set('Authorization', `Bearer ${token}`);
+    const authedB = (req) => req.set('Authorization', `Bearer ${second.token}`);
+
+    for (const [send, uid] of [[authedA, userId], [authedB, second.userId]]) {
+      await send(request(app).post('/logs/2026-08-01')).send({
+        sessionsCompleted: [true, true, true, false],
+      });
+      await send(request(app).post('/logs/2026-08-08')).send({
+        sessionsCompleted: [true, true, true, false],
+      });
+      await RankState.updateOne({ userId: uid }, { $set: { lastFinalizedDate: '2026-07-31' } }, { upsert: true });
+      await StreakState.updateOne({ userId: uid }, { $set: { lastFinalizedDate: '2026-07-31' } }, { upsert: true });
+    }
+
+    // User A finalizes lazily via GET /streak; user B via the explicit cron run.
+    const a = await authedA(request(app).get('/streak'));
+    expect(a.body.confirmedStreak).toBe(0);
+    await catchUpFinalization();
+
+    const aState = await StreakState.findOne({ userId }).lean();
+    const bState = await StreakState.findOne({ userId: second.userId }).lean();
+    expect(bState.confirmedStreak).toBe(aState.confirmedStreak);
+    expect(bState.lastFinalizedDate).toBe(aState.lastFinalizedDate);
+
+    const aRank = await RankState.findOne({ userId }).lean();
+    const bRank = await RankState.findOne({ userId: second.userId }).lean();
+    expect(bRank.totalRP).toBe(aRank.totalRP);
+    expect(bRank.lastFinalizedDate).toBe(aRank.lastFinalizedDate);
   });
 });
 

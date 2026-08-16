@@ -83,6 +83,65 @@ function midnightReset({ currentStreak, yesterdayCompleted }) {
   return currentStreak;
 }
 
+// Walks EVERY calendar date in [startDate, endDate] (inclusive), in chronological
+// order, continuing the streak state machine from `state`. `isCompleted(date)`
+// answers whether that date counts as completed; a false answer (including a gap
+// date with zero log data) resets confirmedStreak to 0. This is the calendar-
+// aware walk that computeStreakFromLogs cannot express — it only sees existing
+// documents, so a skipped day with no log at all is invisible to it.
+function finalizeDateRange(state = {}, startDate, endDate, isCompleted) {
+  const out = {
+    confirmedStreak: state.confirmedStreak || 0,
+    longestStreak: state.longestStreak || 0,
+    totalDaysCompleted: state.totalDaysCompleted || 0,
+    lastCompletedDate: state.lastCompletedDate || null,
+  };
+  if (!startDate || !endDate || startDate > endDate) return out;
+
+  let date = startDate;
+  while (date <= endDate) {
+    if (isCompleted(date)) {
+      out.confirmedStreak += 1;
+      out.longestStreak = Math.max(out.longestStreak, out.confirmedStreak);
+      out.totalDaysCompleted += 1;
+      out.lastCompletedDate = date;
+    } else {
+      out.confirmedStreak = 0;
+    }
+    date = nextDate(date);
+  }
+  return out;
+}
+
+// The CONFIRMED streak as of `cutoffDate`: a full recompute from the earliest
+// logged date through cutoffDate. Unlike computeStreakFromLogs (which only
+// iterates existing documents), this walks every calendar date, so a missed day
+// that has no DailyLog at all still resets the streak to 0 — the core Phase 21
+// bug (complete day 1, skip day 2 with no log, complete day 3 must show 1, not 2).
+function confirmedStreakFor(logs = [], cutoffDate) {
+  const relevant = logs
+    .filter((l) => l && l.date <= cutoffDate)
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  if (relevant.length === 0) {
+    return {
+      confirmedStreak: 0,
+      longestStreak: 0,
+      totalDaysCompleted: 0,
+      lastCompletedDate: null,
+    };
+  }
+
+  const startDate = relevant[0].date;
+  const byDate = new Map(relevant.map((l) => [l.date, Boolean(l.dayCompleted)]));
+  return finalizeDateRange(
+    { confirmedStreak: 0, longestStreak: 0, totalDaysCompleted: 0, lastCompletedDate: null },
+    startDate,
+    cutoffDate,
+    (date) => byDate.get(date) || false
+  );
+}
+
 // Recomputes the authoritative streak state from the full ordered set of daily
 // logs ({ date, dayCompleted } ascending). Idempotent and handles un-completing a
 // previously-counted day (something the incremental applyLog cannot do), so a
@@ -120,5 +179,7 @@ module.exports = {
   nextDate,
   applyLog,
   computeStreakFromLogs,
+  confirmedStreakFor,
+  finalizeDateRange,
   midnightReset,
 };

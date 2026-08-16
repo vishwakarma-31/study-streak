@@ -2,7 +2,7 @@
 
 Update this file at the end of every session. Check off subtasks as completed. Add a short note under a phase if something is blocked, half-done, or deviated from plan.
 
-**Current active phase:** 20 (Phase 19 implementation landed 2026-08-15 — on-device verification + Render redeploy still pending the human gate)
+**Current active phase:** 22 (Settings screen scroll fix implemented 2026-08-15 — verified tsc/lint/jest, needs on-device confirmation + next APK build)
 
 ---
 
@@ -314,3 +314,33 @@ Notes:
 - [ ] Todos screen, offline-first via services/todos.ts
 - [ ] skills/todo-list-feature.md written
 - Notes: new feature, decoupled from streak/rank by design (see decisions.md). See loop goal doc 02.
+
+## Phase 21 — Streak Gap-Day Bug (URGENT FIX, IMPLEMENTED 2026-08-15)
+- [x] Root cause identified: streak never reset on a skipped day that had NO DailyLog at all
+- [x] Calendar-aware `confirmedStreakFor`/`finalizeDateRange` in streakCalculator.js (walks every date, resets on any missed day — including no-log days)
+- [x] Read path (`buildStreakResponse`) derives confirmed from the calendar walk, not filtered `computeStreakFromLogs`
+- [x] Idempotent `catchUpFinalization()` replaces `runMidnightFinalization` (cron + opportunistic request-path catch-up)
+- [x] Middleware on GET /streak, POST /logs/:date, all custom-tasks routes
+- [x] `upsertLog` no longer clobbers confirmed fields on StreakState (existence-only `$setOnInsert`)
+- [x] Unit + integration tests for gap-day reset, multi-day gap, idempotency, lazy-vs-cron equivalence
+- [ ] Render redeploy to serve the fix (human gate) — the deployed backend still has the bug
+- Notes:
+  - **The reported symptom:** complete day 1 (streak 1), skip day 2 entirely, complete day 3 → streak climbed (2, 3, …) instead of resetting. Reproduced in code: `buildStreakResponse` computed the confirmed streak with `computeStreakFromLogs(logs.filter(l => l.date <= previousDate(dateStr)))`, and `computeStreakFromLogs` only iterates **existing** DailyLog documents — a missed day with zero logs was invisible, so the trailing gap never reset. The same blind spot existed in the cron's stored snapshot. Note: progress.md's Phase 19 entry claimed a calendar-aware `confirmedStreakFor` already existed — it did not; Phase 19 shipped the filtered-`computeStreakFromLogs` variant, which is precisely the bug.
+  - **Fix, read path:** `confirmedStreakFor(logs, cutoff)` full-recomputes the confirmed streak from the earliest log through the cutoff, walking EVERY calendar date with `nextDate()` arithmetic — a false date (missing or logged-but-incomplete) resets to 0. `buildStreakResponse` uses it with `cutoff = previousDate(dateStr)`; `currentStreak = confirmed + (todayProvisional ? 1 : 0)` unchanged. Stored StreakState is no longer the authority for anything but the 404 gate.
+  - **Fix, finalization:** `cron/dailyFinalization.js` is now `catchUpFinalization({ nowDate, userId })` — idempotent and boundary-gated (`lastFinalizedDate >= yesterday` → no-op, 2 reads). It full-recomputes the confirmed streak from logs (self-healing: it also corrects any snapshot corrupted by the pre-fix cron) and awards RP only for dates in `(lastFinalizedDate, yesterday]` so a multi-day gap (Render free-tier sleep, deploy, etc.) is caught up with exactly one award per completed day. First-run null boundary sets the boundary WITHOUT awarding (legacy days already earned RP — never double-award). Correctness no longer depends on the exact-midnight cron firing.
+  - **Wiring:** new `middleware/finalizeBeforeRequest.js` calls `catchUpFinalization({ userId })` before GET /streak, POST /logs/:date, and every custom-tasks route; `startMidnightCron` still calls it (all users) as the fallback. `upsertLog`'s StreakState write is now existence-only (`$setOnInsert`) so catch-up owns the confirmed fields.
+  - **Known semantics:** once a day is finalized as missed, a later offline sync re-writing that date does NOT revive the confirmed streak (finalized-at-midnight is final — by design for a strict streak).
+  - **Tests:** backend **153/153** (was 137). New: `confirmedStreakFor` + `finalizeDateRange` unit suites (gap-day reset incl. the exact reported "complete/skip/complete → 1 not 2", multi-day gap, cutoff exclusion, continuation); integration: skipped-day reset via API, multi-day gap → stored snapshot 0, `catchUpFinalization` idempotency (no double RP/streak), lazy GET /streak == explicit all-users cron run (compared across two users). Rewrote the two GET /streak tests that asserted the old buggy behavior (`returns streak state and history` → today-relative; `uncompleting the latest consecutive day` → now asserts strict 2→0). RP tests now `RankState.updateOne(...upsert)` (catch-up creates the doc; `create` would hit the unique index).
+  - **One-time backfill:** NO separate migration script needed — the first `catchUpFinalization` run after deploy recomputes every StreakState.confirmedStreak from logs and walks any stale RankState boundary, correcting existing data automatically.
+  - **Pending (human gate):** redeploy backend to Render, then reproduce the original scenario against the deployed API to confirm the reset on-device.
+
+## Phase 22 — Settings Screen Scroll Fix
+- [x] Confirmed bug: reminder list not in a scrollable container — lower REMINDER_META cards + sign-out unreachable
+- [x] Settings content wrapped in a single `ScrollView` (matches the Today/Progress/Roadmap pattern)
+- [x] Whole screen scrolls as one — no nested scroll conflicts; sign-out button reachable
+- [ ] On-device visual confirmation + next APK build (human gate)
+- Notes:
+  - **Root cause:** `settings.tsx` rendered every child directly on `Screen` (a fixed `flex: 1` ThemedView). Since Phase 18, each reminder card grew taller (Notification/Alarm mode pills, `Ring for` duration pills on alarm-mode cards, the limited-alarm / exact-alarm-permission rows, plus the anyAlarm caveat text), so the fixed layout overflowed the viewport and the lower reminders + sign-out button were cut off with no scroll.
+  - **Fix:** `Screen style={styles.container}` (now just `flex: 1`) → `<ScrollView contentContainerStyle={styles.content}>` wrapping the title, the whole reminders section, and the sign-out FadeInView. The horizontal/bottom padding and `gap` moved from the container style into `content` (paddingHorizontal `Spacing.four` + paddingBottom `Spacing.four`, gap `Spacing.three`), mirroring the Today (`index.tsx`), Progress, Roadmap, and history-detail screens. One scroll container, no FlatList nesting — the reminder list is small and fixed (5 cards), so a FlatList would only add header/footer wiring with no benefit.
+  - **Verified:** `tsc --noEmit` clean, `expo lint` clean, jest 25/25.
+  - **Not yet done:** needs the next APK build for the fix to reach the phone (the installed APK predates it); visual confirmation on-device is a Phase 9/10 human gate.

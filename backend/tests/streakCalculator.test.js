@@ -5,6 +5,8 @@ const {
   nextDate,
   applyLog,
   computeStreakFromLogs,
+  confirmedStreakFor,
+  finalizeDateRange,
   midnightReset,
 } = require('../src/services/streakCalculator');
 
@@ -192,6 +194,148 @@ describe('computeStreakFromLogs', () => {
     const logs = [{ date: '2026-08-10', dayCompleted: true }];
     computeStreakFromLogs(logs);
     expect(logs).toEqual([{ date: '2026-08-10', dayCompleted: true }]);
+  });
+});
+
+describe('confirmedStreakFor (Phase 21 calendar-aware confirmed streak)', () => {
+  const empty = { confirmedStreak: 0, longestStreak: 0, totalDaysCompleted: 0, lastCompletedDate: null };
+
+  test('no logs before the cutoff yields all zeros', () => {
+    expect(confirmedStreakFor([], '2026-08-14')).toEqual(empty);
+  });
+
+  test('walking from the earliest log through the cutoff: consecutive days count', () => {
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-09', dayCompleted: true },
+        { date: '2026-08-10', dayCompleted: true },
+      ],
+      '2026-08-10'
+    );
+    expect(state.confirmedStreak).toBe(2);
+    expect(state.longestStreak).toBe(2);
+    expect(state.totalDaysCompleted).toBe(2);
+    expect(state.lastCompletedDate).toBe('2026-08-10');
+  });
+
+  test('the Phase 21 bug: a gap day with NO log at all resets the streak to 0', () => {
+    // Complete day 1, skip day 2 entirely (no DailyLog), complete day 3.
+    // computeStreakFromLogs returns 1 (it only sees existing docs); the
+    // calendar-aware walk must return 1, NOT 2.
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-09', dayCompleted: true },
+        { date: '2026-08-11', dayCompleted: true },
+      ],
+      '2026-08-11'
+    );
+    expect(state.confirmedStreak).toBe(1);
+    expect(state.longestStreak).toBe(1);
+    expect(state.totalDaysCompleted).toBe(2);
+    expect(state.lastCompletedDate).toBe('2026-08-11');
+  });
+
+  test('a multi-day gap with no logs resets the streak to 0', () => {
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-01', dayCompleted: true },
+        { date: '2026-08-08', dayCompleted: true },
+      ],
+      '2026-08-08'
+    );
+    expect(state.confirmedStreak).toBe(1);
+    expect(state.longestStreak).toBe(1);
+  });
+
+  test('a missed day before the cutoff with a later completed day restarts at 1', () => {
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-09', dayCompleted: true },
+        { date: '2026-08-11', dayCompleted: true },
+      ],
+      '2026-08-11'
+    );
+    expect(state.confirmedStreak).toBe(1);
+  });
+
+  test('an explicitly-uncompleted day at the cutoff resets the confirmed streak', () => {
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-09', dayCompleted: true },
+        { date: '2026-08-10', dayCompleted: false },
+      ],
+      '2026-08-10'
+    );
+    expect(state.confirmedStreak).toBe(0);
+    expect(state.longestStreak).toBe(1);
+    expect(state.totalDaysCompleted).toBe(1);
+    expect(state.lastCompletedDate).toBe('2026-08-09');
+  });
+
+  test('logs after the cutoff are excluded from the confirmed walk', () => {
+    // The walk covers [earliest log, cutoff] = 08-09..08-10; 08-11 is out of
+    // range, and 08-10 (in range, no log) resets the streak to 0.
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-09', dayCompleted: true },
+        { date: '2026-08-11', dayCompleted: true },
+      ],
+      '2026-08-10'
+    );
+    expect(state.confirmedStreak).toBe(0);
+    expect(state.totalDaysCompleted).toBe(1);
+  });
+
+  test('unsorted input is normalized', () => {
+    const state = confirmedStreakFor(
+      [
+        { date: '2026-08-11', dayCompleted: true },
+        { date: '2026-08-09', dayCompleted: true },
+        { date: '2026-08-10', dayCompleted: true },
+      ],
+      '2026-08-11'
+    );
+    expect(state.confirmedStreak).toBe(3);
+  });
+});
+
+describe('finalizeDateRange', () => {
+  const empty = { confirmedStreak: 0, longestStreak: 0, totalDaysCompleted: 0, lastCompletedDate: null };
+
+  test('empty/inverted range is a no-op', () => {
+    expect(finalizeDateRange(empty, '2026-08-10', '2026-08-09', () => true)).toEqual(empty);
+    expect(finalizeDateRange(empty, null, '2026-08-10', () => true)).toEqual(empty);
+  });
+
+  test('completes every date in an inclusive range', () => {
+    const state = finalizeDateRange(empty, '2026-08-09', '2026-08-12', () => true);
+    expect(state.confirmedStreak).toBe(4);
+    expect(state.longestStreak).toBe(4);
+    expect(state.totalDaysCompleted).toBe(4);
+    expect(state.lastCompletedDate).toBe('2026-08-12');
+  });
+
+  test('resets on any non-completed date and continues', () => {
+    // Completed: 09, 10, 13. The reset at 11/12 leaves the 13th as a fresh 1.
+    const state = finalizeDateRange(
+      empty,
+      '2026-08-09',
+      '2026-08-13',
+      (d) => d !== '2026-08-11' && d !== '2026-08-12'
+    );
+    expect(state.confirmedStreak).toBe(1);
+    expect(state.longestStreak).toBe(2);
+    expect(state.totalDaysCompleted).toBe(3);
+    expect(state.lastCompletedDate).toBe('2026-08-13');
+  });
+
+  test('continues from a prior state (incremental continuation)', () => {
+    const prior = { confirmedStreak: 2, longestStreak: 2, totalDaysCompleted: 2, lastCompletedDate: '2026-08-10' };
+    const state = finalizeDateRange(prior, '2026-08-11', '2026-08-12', () => true);
+    expect(state.confirmedStreak).toBe(4);
+    expect(state.longestStreak).toBe(4);
+    expect(state.totalDaysCompleted).toBe(4);
+    expect(state.lastCompletedDate).toBe('2026-08-12');
   });
 });
 

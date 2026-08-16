@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 
 import { BatteryOptimizationNote } from '@/components/battery-optimization-note';
@@ -151,11 +151,12 @@ export default function SettingsScreen() {
 
   return (
     <Screen style={styles.container}>
-      <ThemedText type="subtitle" style={styles.title}>
-        Settings
-      </ThemedText>
+      <ScrollView contentContainerStyle={styles.content}>
+        <ThemedText type="subtitle" style={styles.title}>
+          Settings
+        </ThemedText>
 
-      <View style={styles.section}>
+        <View style={styles.section}>
         <ThemedText type="default">Study reminders</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           Local notifications that follow the study plan. Times are fixed to the daily routine and
@@ -291,6 +292,7 @@ export default function SettingsScreen() {
           <ThemedText style={[styles.buttonLabel, { color: theme.destructive }]}>Sign out</ThemedText>
         </Pressable>
       </FadeInView>
+      </ScrollView>
     </Screen>
   );
 }
@@ -333,6 +335,8 @@ function ModePill({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  content: {
     paddingHorizontal: Spacing.four,
     paddingBottom: Spacing.four,
     gap: Spacing.three,

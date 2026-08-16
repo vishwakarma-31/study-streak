@@ -3,7 +3,7 @@ const StreakState = require('../models/StreakState');
 const CustomTask = require('../models/CustomTask');
 const User = require('../models/User');
 const Roadmap = require('../models/Roadmap');
-const { countCompleted, isDayCompleted, computeStreakFromLogs } = require('../services/streakCalculator');
+const { countCompleted, isDayCompleted } = require('../services/streakCalculator');
 const { buildStreakResponse } = require('./streakController');
 const { resolveWeek, dayTaskFor, resolveToday, blocksForDay } = require('../services/dayPlan');
 
@@ -175,13 +175,17 @@ async function upsertLog(req, res, next) {
       { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 
-    // Keep the StreakState doc alive with the legacy cached fields (it doubles
-    // as the existence gate for GET /streak); the authoritative provisional
-    // streak is derived on every read by buildStreakResponse. RP is no longer
-    // awarded at write time — it is finalized by the midnight cron.
-    const logs = await DailyLog.find({ userId }).select('date dayCompleted').sort({ date: 1 }).lean();
-    const streakState = computeStreakFromLogs(logs);
-    await StreakState.updateOne({ userId }, { $set: streakState }, { upsert: true });
+    // Keep the StreakState doc alive with an existence-only upsert: it doubles
+    // as the existence gate for GET /streak, but the authoritative confirmed
+    // fields (confirmedStreak, longestStreak, totalDaysCompleted, lastCompletedDate)
+    // and lastFinalizedDate are owned by catchUpFinalization. Writing them here
+    // would clobber the calendar-aware snapshot (and reintroduce the Phase 21
+    // trailing-gap bug into stored state), so use $setOnInsert — never $set them.
+    await StreakState.updateOne(
+      { userId },
+      { $setOnInsert: { userId } },
+      { upsert: true }
+    );
 
     const streak = await buildStreakResponse(userId, date);
     return res.json({ log, streak });
